@@ -155,10 +155,12 @@ export default function PortfolioPage() {
                         <span className={dashStyles.navIcon}>📋</span>
                         Transactions
                     </Link>
-                    <Link href="/members" className={dashStyles.navItem}>
-                        <span className={dashStyles.navIcon}>👥</span>
-                        Members
-                    </Link>
+                    {user?.role === "ADMIN" && (
+                        <Link href="/members" className={dashStyles.navItem}>
+                            <span className={dashStyles.navIcon}>👥</span>
+                            Members
+                        </Link>
+                    )}
                     <Link href="/settings" className={dashStyles.navItem}>
                         <span className={dashStyles.navIcon}>⚙️</span>
                         Settings

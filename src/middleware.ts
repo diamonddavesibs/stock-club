@@ -9,11 +9,11 @@ export default auth((req) => {
     const { nextUrl } = req;
 
     // Protected routes
-    const protectedPaths = ["/dashboard", "/portfolio", "/transactions", "/members", "/settings"];
+    const protectedPaths = ["/dashboard", "/portfolio", "/transactions", "/settings"];
     const isProtectedRoute = protectedPaths.some(path => nextUrl.pathname.startsWith(path));
 
     // Admin-only routes
-    const adminPaths = ["/admin"];
+    const adminPaths = ["/admin", "/members"];
     const isAdminRoute = adminPaths.some(path => nextUrl.pathname.startsWith(path));
 
     // Auth routes (login, signup)

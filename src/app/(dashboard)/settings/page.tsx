@@ -21,6 +21,16 @@ export default function UploadPage() {
     const [success, setSuccess] = useState("");
     const [dragActive, setDragActive] = useState<"positions" | "transactions" | null>(null);
 
+    // Password change state
+    const [passwordForm, setPasswordForm] = useState({
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+    });
+    const [passwordError, setPasswordError] = useState("");
+    const [passwordSuccess, setPasswordSuccess] = useState("");
+    const [passwordLoading, setPasswordLoading] = useState(false);
+
     const positionsInputRef = useRef<HTMLInputElement>(null);
     const transactionsInputRef = useRef<HTMLInputElement>(null);
 
@@ -137,6 +147,49 @@ export default function UploadPage() {
         }
     };
 
+    const handlePasswordChange = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setPasswordError("");
+        setPasswordSuccess("");
+
+        // Validation
+        if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+            setPasswordError("New passwords do not match");
+            return;
+        }
+
+        if (passwordForm.newPassword.length < 8) {
+            setPasswordError("New password must be at least 8 characters");
+            return;
+        }
+
+        setPasswordLoading(true);
+
+        try {
+            const response = await fetch("/api/user/change-password", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    currentPassword: passwordForm.currentPassword,
+                    newPassword: passwordForm.newPassword,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                setPasswordSuccess("Password changed successfully!");
+                setPasswordForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
+            } else {
+                setPasswordError(data.error || "Failed to change password");
+            }
+        } catch (error) {
+            setPasswordError("Failed to change password. Please try again.");
+        } finally {
+            setPasswordLoading(false);
+        }
+    };
+
     const formatCurrency = (value: number) => {
         return new Intl.NumberFormat("en-US", {
             style: "currency",
@@ -172,10 +225,12 @@ export default function UploadPage() {
                         <span className={dashStyles.navIcon}>📋</span>
                         Transactions
                     </Link>
-                    <Link href="/members" className={dashStyles.navItem}>
-                        <span className={dashStyles.navIcon}>👥</span>
-                        Members
-                    </Link>
+                    {user?.role === "ADMIN" && (
+                        <Link href="/members" className={dashStyles.navItem}>
+                            <span className={dashStyles.navIcon}>👥</span>
+                            Members
+                        </Link>
+                    )}
                     <Link href="/settings" className={`${dashStyles.navItem} ${dashStyles.navItemActive}`}>
                         <span className={dashStyles.navIcon}>⚙️</span>
                         Settings
@@ -205,11 +260,109 @@ export default function UploadPage() {
             <main className={dashStyles.mainContent}>
                 <header className={dashStyles.header}>
                     <div className={dashStyles.headerContent}>
-                        <h1 className={dashStyles.pageTitle}>Import Schwab Data</h1>
+                        <h1 className={dashStyles.pageTitle}>Settings</h1>
                     </div>
                 </header>
 
                 <div className={styles.uploadPage}>
+                    {/* Password Change Section */}
+                    <div className={styles.uploadCard} style={{ marginBottom: 'var(--space-xl)' }}>
+                        <h2 className={styles.uploadCardTitle}>🔐 Change Password</h2>
+                        <p className={styles.uploadCardDesc}>
+                            Update your account password
+                        </p>
+
+                        {/* Password Success/Error Messages */}
+                        {passwordSuccess && <div className={styles.successMessage}>✓ {passwordSuccess}</div>}
+                        {passwordError && <div className={styles.errorMessage}>⚠ {passwordError}</div>}
+
+                        <form onSubmit={handlePasswordChange} style={{ marginTop: 'var(--space-md)' }}>
+                            <div style={{ marginBottom: 'var(--space-md)' }}>
+                                <label style={{ display: 'block', marginBottom: 'var(--space-xs)', fontWeight: 500 }}>
+                                    Current Password
+                                </label>
+                                <input
+                                    type="password"
+                                    value={passwordForm.currentPassword}
+                                    onChange={(e) => setPasswordForm({ ...passwordForm, currentPassword: e.target.value })}
+                                    required
+                                    style={{
+                                        width: '100%',
+                                        padding: 'var(--space-sm)',
+                                        border: '1px solid var(--color-border)',
+                                        borderRadius: 'var(--radius-md)',
+                                        fontSize: '0.875rem'
+                                    }}
+                                />
+                            </div>
+
+                            <div style={{ marginBottom: 'var(--space-md)' }}>
+                                <label style={{ display: 'block', marginBottom: 'var(--space-xs)', fontWeight: 500 }}>
+                                    New Password
+                                </label>
+                                <input
+                                    type="password"
+                                    value={passwordForm.newPassword}
+                                    onChange={(e) => setPasswordForm({ ...passwordForm, newPassword: e.target.value })}
+                                    required
+                                    minLength={8}
+                                    style={{
+                                        width: '100%',
+                                        padding: 'var(--space-sm)',
+                                        border: '1px solid var(--color-border)',
+                                        borderRadius: 'var(--radius-md)',
+                                        fontSize: '0.875rem'
+                                    }}
+                                />
+                                <small style={{ color: 'var(--color-text-muted)', fontSize: '0.75rem' }}>
+                                    Minimum 8 characters
+                                </small>
+                            </div>
+
+                            <div style={{ marginBottom: 'var(--space-md)' }}>
+                                <label style={{ display: 'block', marginBottom: 'var(--space-xs)', fontWeight: 500 }}>
+                                    Confirm New Password
+                                </label>
+                                <input
+                                    type="password"
+                                    value={passwordForm.confirmPassword}
+                                    onChange={(e) => setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })}
+                                    required
+                                    style={{
+                                        width: '100%',
+                                        padding: 'var(--space-sm)',
+                                        border: '1px solid var(--color-border)',
+                                        borderRadius: 'var(--radius-md)',
+                                        fontSize: '0.875rem'
+                                    }}
+                                />
+                            </div>
+
+                            <button
+                                type="submit"
+                                disabled={passwordLoading}
+                                style={{
+                                    padding: 'var(--space-sm) var(--space-lg)',
+                                    background: 'var(--color-accent-primary)',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: 'var(--radius-md)',
+                                    fontSize: '0.875rem',
+                                    fontWeight: 500,
+                                    cursor: passwordLoading ? 'not-allowed' : 'pointer',
+                                    opacity: passwordLoading ? 0.6 : 1
+                                }}
+                            >
+                                {passwordLoading ? 'Changing Password...' : 'Change Password'}
+                            </button>
+                        </form>
+                    </div>
+
+                    {/* Portfolio Upload Section */}
+                    <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: 'var(--space-md)' }}>
+                        Import Schwab Data
+                    </h2>
+
                     {/* Success/Error Messages */}
                     {success && <div className={styles.successMessage}>✓ {success}</div>}
                     {error && <div className={styles.errorMessage}>⚠ {error}</div>}

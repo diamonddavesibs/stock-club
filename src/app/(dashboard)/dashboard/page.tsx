@@ -171,10 +171,12 @@ export default function DashboardPage() {
                         <span className={styles.navIcon}>📋</span>
                         Transactions
                     </Link>
-                    <Link href="/members" className={styles.navItem}>
-                        <span className={styles.navIcon}>👥</span>
-                        Members
-                    </Link>
+                    {user?.role === "ADMIN" && (
+                        <Link href="/members" className={styles.navItem}>
+                            <span className={styles.navIcon}>👥</span>
+                            Members
+                        </Link>
+                    )}
                     <Link href="/settings" className={styles.navItem}>
                         <span className={styles.navIcon}>⚙️</span>
                         Settings
