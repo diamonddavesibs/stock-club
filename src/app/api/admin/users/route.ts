@@ -47,9 +47,12 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: "Name and email are required" }, { status: 400 });
         }
 
+        // Normalize email to lowercase and trim whitespace
+        const normalizedEmail = email.toLowerCase().trim();
+
         // Check if user already exists
         const existingUser = await prisma.user.findUnique({
-            where: { email },
+            where: { email: normalizedEmail },
         });
 
         if (existingUser) {
@@ -64,7 +67,7 @@ export async function POST(request: NextRequest) {
         const user = await prisma.user.create({
             data: {
                 name,
-                email,
+                email: normalizedEmail,
                 password: hashedPassword,
                 role: role || "MEMBER",
             },
