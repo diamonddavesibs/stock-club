@@ -179,6 +179,12 @@ export default function DashboardPage() {
                         <span className={styles.navIcon}>⚙️</span>
                         Settings
                     </Link>
+                    {user?.role === "ADMIN" && (
+                        <Link href="/admin/users" className={styles.navItem}>
+                            <span className={styles.navIcon}>🔐</span>
+                            Admin Panel
+                        </Link>
+                    )}
                 </nav>
 
                 <div className={styles.sidebarFooter}>

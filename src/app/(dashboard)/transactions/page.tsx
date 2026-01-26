@@ -173,6 +173,12 @@ export default function TransactionsPage() {
                         <span className={dashStyles.navIcon}>⚙️</span>
                         Settings
                     </Link>
+                    {user?.role === "ADMIN" && (
+                        <Link href="/admin/users" className={dashStyles.navItem}>
+                            <span className={dashStyles.navIcon}>🔐</span>
+                            Admin Panel
+                        </Link>
+                    )}
                 </nav>
 
                 <div className={dashStyles.sidebarFooter}>
