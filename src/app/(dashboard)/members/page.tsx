@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 import dashStyles from "../dashboard.module.css";
@@ -10,38 +10,46 @@ interface Member {
     id: string;
     name: string;
     email: string;
-    role: "admin" | "member";
-    joinDate: string;
-    contribution: number;
-    portfolioShare: number;
-    status: "active" | "inactive";
-    avatar?: string;
+    role: string;
+    createdAt: string;
 }
 
-// Sample members data
-const sampleMembers: Member[] = [
-    { id: "1", name: "Alice Johnson", email: "alice@dfdii.com", role: "admin", joinDate: "2022-01-15", contribution: 15000, portfolioShare: 18.5, status: "active" },
-    { id: "2", name: "Bob Smith", email: "bob@dfdii.com", role: "member", joinDate: "2022-02-20", contribution: 12000, portfolioShare: 14.8, status: "active" },
-    { id: "3", name: "Carol Davis", email: "carol@dfdii.com", role: "member", joinDate: "2022-03-10", contribution: 10000, portfolioShare: 12.3, status: "active" },
-    { id: "4", name: "David Wilson", email: "david@dfdii.com", role: "member", joinDate: "2022-04-05", contribution: 13500, portfolioShare: 16.6, status: "active" },
-    { id: "5", name: "Emma Brown", email: "emma@dfdii.com", role: "member", joinDate: "2022-05-12", contribution: 11000, portfolioShare: 13.5, status: "active" },
-    { id: "6", name: "Frank Martinez", email: "frank@dfdii.com", role: "member", joinDate: "2022-06-18", contribution: 9500, portfolioShare: 11.7, status: "active" },
-    { id: "7", name: "Grace Lee", email: "grace@dfdii.com", role: "member", joinDate: "2022-07-22", contribution: 10500, portfolioShare: 12.9, status: "active" },
-    { id: "8", name: "Henry Chen", email: "henry@dfdii.com", role: "member", joinDate: "2023-01-08", contribution: 8000, portfolioShare: 9.9, status: "inactive" },
-];
-
-type SortKey = "name" | "role" | "joinDate" | "contribution" | "portfolioShare";
+type SortKey = "name" | "role" | "createdAt";
 type SortOrder = "asc" | "desc";
 
 export default function MembersPage() {
     const { data: session } = useSession();
     const user = session?.user;
-    const [members] = useState<Member[]>(sampleMembers);
+    const [members, setMembers] = useState<Member[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
     const [filterRole, setFilterRole] = useState<string>("ALL");
-    const [filterStatus, setFilterStatus] = useState<string>("ALL");
     const [sortKey, setSortKey] = useState<SortKey>("name");
     const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
+
+    // Fetch real users from the database
+    useEffect(() => {
+        const fetchUsers = async () => {
+            if (!user?.id) {
+                setIsLoading(false);
+                return;
+            }
+
+            try {
+                const response = await fetch("/api/admin/users");
+                if (response.ok) {
+                    const { users } = await response.json();
+                    setMembers(users);
+                }
+            } catch (error) {
+                console.error("Failed to load members:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchUsers();
+    }, [user?.id]);
 
     const getInitials = (name: string) => {
         return name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
@@ -49,15 +57,6 @@ export default function MembersPage() {
 
     const handleSignOut = async () => {
         await signOut({ callbackUrl: "/" });
-    };
-
-    const formatCurrency = (value: number) => {
-        return new Intl.NumberFormat("en-US", {
-            style: "currency",
-            currency: "USD",
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0,
-        }).format(value);
     };
 
     const formatDate = (dateStr: string) => {
@@ -81,35 +80,25 @@ export default function MembersPage() {
 
         // Apply role filter
         if (filterRole !== "ALL") {
-            filtered = filtered.filter((m) => m.role === filterRole);
-        }
-
-        // Apply status filter
-        if (filterStatus !== "ALL") {
-            filtered = filtered.filter((m) => m.status === filterStatus);
+            filtered = filtered.filter((m) => m.role.toUpperCase() === filterRole);
         }
 
         // Apply sorting
         return [...filtered].sort((a, b) => {
-            let aVal: string | number;
-            let bVal: string | number;
+            let aVal: string;
+            let bVal: string;
 
-            if (sortKey === "name" || sortKey === "role" || sortKey === "joinDate") {
+            if (sortKey === "name" || sortKey === "role" || sortKey === "createdAt") {
                 aVal = a[sortKey];
                 bVal = b[sortKey];
-                if (typeof aVal === "string" && typeof bVal === "string") {
-                    return sortOrder === "asc"
-                        ? aVal.localeCompare(bVal)
-                        : bVal.localeCompare(aVal);
-                }
-            } else {
-                aVal = a[sortKey];
-                bVal = b[sortKey];
+                return sortOrder === "asc"
+                    ? aVal.localeCompare(bVal)
+                    : bVal.localeCompare(aVal);
             }
 
-            return sortOrder === "asc" ? (aVal as number) - (bVal as number) : (bVal as number) - (aVal as number);
+            return 0;
         });
-    }, [members, searchQuery, filterRole, filterStatus, sortKey, sortOrder]);
+    }, [members, searchQuery, filterRole, sortKey, sortOrder]);
 
     const handleSort = (key: SortKey) => {
         if (sortKey === key) {
@@ -130,9 +119,19 @@ export default function MembersPage() {
     };
 
     // Calculate summary stats
-    const activeMembers = members.filter(m => m.status === "active").length;
-    const totalContributions = members.reduce((sum, m) => sum + m.contribution, 0);
-    const avgContribution = totalContributions / members.length;
+    const totalMembers = members.length;
+    const adminCount = members.filter(m => m.role === "ADMIN").length;
+    const memberCount = members.filter(m => m.role === "MEMBER").length;
+
+    if (isLoading) {
+        return (
+            <div className={dashStyles.dashboardLayout}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', width: '100%' }}>
+                    <p style={{ color: 'var(--color-text-muted)' }}>Loading members...</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className={dashStyles.dashboardLayout}>
@@ -213,17 +212,8 @@ export default function MembersPage() {
                                 onChange={(e) => setFilterRole(e.target.value)}
                             >
                                 <option value="ALL">All Roles</option>
-                                <option value="admin">Admin</option>
-                                <option value="member">Member</option>
-                            </select>
-                            <select
-                                className={styles.filterSelect}
-                                value={filterStatus}
-                                onChange={(e) => setFilterStatus(e.target.value)}
-                            >
-                                <option value="ALL">All Status</option>
-                                <option value="active">Active</option>
-                                <option value="inactive">Inactive</option>
+                                <option value="ADMIN">Admin</option>
+                                <option value="MEMBER">Member</option>
                             </select>
                             <input
                                 type="text"
@@ -239,21 +229,19 @@ export default function MembersPage() {
                     <div className={styles.summaryGrid}>
                         <div className={styles.summaryCard}>
                             <div className={styles.summaryLabel}>Total Members</div>
-                            <div className={styles.summaryValue}>{members.length}</div>
+                            <div className={styles.summaryValue}>{totalMembers}</div>
                         </div>
                         <div className={styles.summaryCard}>
-                            <div className={styles.summaryLabel}>Active Members</div>
-                            <div className={styles.summaryValue} style={{ color: 'var(--color-success)' }}>
-                                {activeMembers}
+                            <div className={styles.summaryLabel}>Administrators</div>
+                            <div className={styles.summaryValue} style={{ color: 'var(--color-accent-primary)' }}>
+                                {adminCount}
                             </div>
                         </div>
                         <div className={styles.summaryCard}>
-                            <div className={styles.summaryLabel}>Total Contributions</div>
-                            <div className={styles.summaryValue}>{formatCurrency(totalContributions)}</div>
-                        </div>
-                        <div className={styles.summaryCard}>
-                            <div className={styles.summaryLabel}>Avg Contribution</div>
-                            <div className={styles.summaryValue}>{formatCurrency(avgContribution)}</div>
+                            <div className={styles.summaryLabel}>Club Members</div>
+                            <div className={styles.summaryValue} style={{ color: 'var(--color-success)' }}>
+                                {memberCount}
+                            </div>
                         </div>
                     </div>
 
@@ -270,16 +258,9 @@ export default function MembersPage() {
                                             <th onClick={() => handleSort("role")}>
                                                 Role <SortIcon column="role" />
                                             </th>
-                                            <th onClick={() => handleSort("joinDate")}>
-                                                Join Date <SortIcon column="joinDate" />
+                                            <th onClick={() => handleSort("createdAt")}>
+                                                Join Date <SortIcon column="createdAt" />
                                             </th>
-                                            <th onClick={() => handleSort("contribution")}>
-                                                Contribution <SortIcon column="contribution" />
-                                            </th>
-                                            <th onClick={() => handleSort("portfolioShare")}>
-                                                Portfolio Share <SortIcon column="portfolioShare" />
-                                            </th>
-                                            <th>Status</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -297,28 +278,11 @@ export default function MembersPage() {
                                                     </div>
                                                 </td>
                                                 <td>
-                                                    <span className={`${styles.roleBadge} ${member.role === "admin" ? styles.roleAdmin : styles.roleMember}`}>
+                                                    <span className={`${styles.roleBadge} ${member.role === "ADMIN" ? styles.roleAdmin : styles.roleMember}`}>
                                                         {member.role}
                                                     </span>
                                                 </td>
-                                                <td className={styles.dateCell}>{formatDate(member.joinDate)}</td>
-                                                <td className={styles.numericCell}>{formatCurrency(member.contribution)}</td>
-                                                <td>
-                                                    <div className={styles.shareCell}>
-                                                        <div className={styles.shareBar}>
-                                                            <div
-                                                                className={styles.shareFill}
-                                                                style={{ width: `${member.portfolioShare}%` }}
-                                                            />
-                                                        </div>
-                                                        <span className={styles.sharePercent}>{member.portfolioShare.toFixed(1)}%</span>
-                                                    </div>
-                                                </td>
-                                                <td>
-                                                    <span className={`${styles.statusBadge} ${member.status === "active" ? styles.statusActive : styles.statusInactive}`}>
-                                                        {member.status}
-                                                    </span>
-                                                </td>
+                                                <td className={styles.dateCell}>{formatDate(member.createdAt)}</td>
                                             </tr>
                                         ))}
                                     </tbody>
