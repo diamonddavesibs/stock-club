@@ -5,6 +5,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import styles from "../auth.module.css";
 
+// Force dynamic rendering for this page
+export const dynamic = 'force-dynamic';
+
 export default function SignupPage() {
     const router = useRouter();
     const [formData, setFormData] = useState({

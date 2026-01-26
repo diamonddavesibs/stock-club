@@ -6,6 +6,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import styles from "../auth.module.css";
 
+// Force dynamic rendering for this page
+export const dynamic = 'force-dynamic';
+
 export default function LoginPage() {
     const router = useRouter();
     const searchParams = useSearchParams();
