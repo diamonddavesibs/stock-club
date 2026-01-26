@@ -1,21 +1,17 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import styles from "../auth.module.css";
 
-function LoginForm() {
+export default function LoginPage() {
     const router = useRouter();
-    const searchParams = useSearchParams();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
-
-    // Check if user just registered
-    const justRegistered = searchParams.get("registered") === "true";
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -57,13 +53,6 @@ function LoginForm() {
                             Sign in to access your club dashboard
                         </p>
                     </div>
-
-                    {/* Success Message */}
-                    {justRegistered && (
-                        <div className={styles.successMessage}>
-                            Account created successfully! Please sign in.
-                        </div>
-                    )}
 
                     {/* Error Message */}
                     {error && <div className={styles.errorMessage}>{error}</div>}
@@ -136,13 +125,5 @@ function LoginForm() {
                 </div>
             </div>
         </div>
-    );
-}
-
-export default function LoginPage() {
-    return (
-        <Suspense fallback={<div>Loading...</div>}>
-            <LoginForm />
-        </Suspense>
     );
 }
