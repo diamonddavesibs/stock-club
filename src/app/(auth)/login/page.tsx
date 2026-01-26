@@ -105,9 +105,11 @@ export default function LoginPage() {
 
                     {/* Footer */}
                     <div className={styles.authFooter}>
-                        <p>
-                            Don&apos;t have an account?{" "}
-                            <Link href="/signup">Create one</Link>
+                        <p style={{ color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>
+                            Need an account? Contact a club administrator.
+                        </p>
+                        <p style={{ marginTop: '0.5rem' }}>
+                            <Link href="/forgot-password">Forgot password?</Link>
                         </p>
                     </div>
                 </div>
