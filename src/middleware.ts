@@ -5,11 +5,16 @@ export const runtime = 'nodejs';
 
 export default auth((req) => {
     const isLoggedIn = !!req.auth;
+    const isAdmin = req.auth?.user?.role === "ADMIN";
     const { nextUrl } = req;
 
     // Protected routes
     const protectedPaths = ["/dashboard", "/portfolio", "/transactions", "/members", "/settings"];
     const isProtectedRoute = protectedPaths.some(path => nextUrl.pathname.startsWith(path));
+
+    // Admin-only routes
+    const adminPaths = ["/admin"];
+    const isAdminRoute = adminPaths.some(path => nextUrl.pathname.startsWith(path));
 
     // Auth routes (login, signup)
     const authPaths = ["/login", "/signup"];
@@ -23,6 +28,11 @@ export default auth((req) => {
     // Redirect non-logged-in users to login
     if (isProtectedRoute && !isLoggedIn) {
         return Response.redirect(new URL("/login", nextUrl));
+    }
+
+    // Redirect non-admin users away from admin pages
+    if (isAdminRoute && !isAdmin) {
+        return Response.redirect(new URL("/dashboard", nextUrl));
     }
 
     return;
