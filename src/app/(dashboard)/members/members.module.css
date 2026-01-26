@@ -1,0 +1,348 @@
+.membersPage {
+    padding: var(--space-xl);
+    max-width: 1400px;
+}
+
+.membersHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-xl);
+    flex-wrap: wrap;
+    gap: var(--space-md);
+}
+
+.membersTitle {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+}
+
+.membersActions {
+    display: flex;
+    gap: var(--space-md);
+    align-items: center;
+}
+
+.filterSelect {
+    padding: var(--space-sm) var(--space-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    color: var(--color-text-primary);
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.filterSelect:hover {
+    border-color: var(--color-accent-primary);
+}
+
+.searchInput {
+    padding: var(--space-sm) var(--space-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    color: var(--color-text-primary);
+    font-size: 0.875rem;
+    min-width: 250px;
+    transition: all 0.2s;
+}
+
+.searchInput:focus {
+    outline: none;
+    border-color: var(--color-accent-primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Summary Cards */
+.summaryGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--space-lg);
+    margin-bottom: var(--space-xl);
+}
+
+.summaryCard {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+}
+
+.summaryLabel {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-sm);
+}
+
+.summaryValue {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+}
+
+/* Members Table */
+.membersCard {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+}
+
+.tableContainer {
+    overflow-x: auto;
+}
+
+.membersTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.membersTable thead {
+    background: var(--color-background);
+    border-bottom: 2px solid var(--color-border);
+}
+
+.membersTable th {
+    padding: var(--space-md);
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+}
+
+.membersTable th:hover {
+    color: var(--color-accent-primary);
+}
+
+.membersTable tbody tr {
+    border-bottom: 1px solid var(--color-border);
+    transition: background-color 0.15s;
+}
+
+.membersTable tbody tr:hover {
+    background: var(--color-background);
+}
+
+.membersTable tbody tr:last-child {
+    border-bottom: none;
+}
+
+.membersTable td {
+    padding: var(--space-md);
+    font-size: 0.875rem;
+    color: var(--color-text-primary);
+}
+
+/* Member Cell */
+.memberCell {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.memberAvatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--color-accent-primary), var(--color-accent-secondary));
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.875rem;
+    flex-shrink: 0;
+}
+
+.memberInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+}
+
+.memberName {
+    font-weight: 600;
+    color: var(--color-text-primary);
+}
+
+.memberEmail {
+    font-size: 0.8125rem;
+    color: var(--color-text-secondary);
+}
+
+.dateCell {
+    font-family: var(--font-mono);
+    color: var(--color-text-secondary);
+    white-space: nowrap;
+}
+
+.numericCell {
+    text-align: right;
+    font-family: var(--font-mono);
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+/* Role Badge */
+.roleBadge {
+    display: inline-block;
+    padding: 0.25rem 0.625rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+}
+
+.roleAdmin {
+    background: rgba(168, 85, 247, 0.1);
+    color: #a855f7;
+}
+
+.roleMember {
+    background: rgba(59, 130, 246, 0.1);
+    color: var(--color-accent-primary);
+}
+
+/* Status Badge */
+.statusBadge {
+    display: inline-block;
+    padding: 0.25rem 0.625rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.statusActive {
+    background: rgba(34, 197, 94, 0.1);
+    color: var(--color-success);
+}
+
+.statusInactive {
+    background: rgba(156, 163, 175, 0.1);
+    color: var(--color-text-secondary);
+}
+
+/* Portfolio Share */
+.shareCell {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.shareBar {
+    flex: 1;
+    height: 8px;
+    background: var(--color-background);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    min-width: 80px;
+}
+
+.shareFill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--color-accent-primary), var(--color-accent-secondary));
+    border-radius: var(--radius-sm);
+    transition: width 0.3s ease;
+}
+
+.sharePercent {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    color: var(--color-text-secondary);
+    min-width: 45px;
+    text-align: right;
+}
+
+/* Sort Indicator */
+.sortIndicator {
+    margin-left: 0.25rem;
+    opacity: 0.4;
+    font-size: 0.75rem;
+}
+
+.sortActive {
+    opacity: 1;
+    color: var(--color-accent-primary);
+}
+
+/* Empty State */
+.emptyState {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-4xl) var(--space-xl);
+    text-align: center;
+}
+
+.emptyIcon {
+    font-size: 4rem;
+    margin-bottom: var(--space-lg);
+    opacity: 0.5;
+}
+
+.emptyTitle {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-sm);
+}
+
+.emptyText {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .membersPage {
+        padding: var(--space-lg);
+    }
+
+    .membersHeader {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .membersActions {
+        flex-direction: column;
+    }
+
+    .filterSelect,
+    .searchInput {
+        width: 100%;
+    }
+
+    .summaryGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .membersTable {
+        font-size: 0.75rem;
+    }
+
+    .membersTable th,
+    .membersTable td {
+        padding: var(--space-sm);
+    }
+
+    .memberAvatar {
+        width: 32px;
+        height: 32px;
+        font-size: 0.75rem;
+    }
+
+    .shareBar {
+        min-width: 60px;
+    }
+}

@@ -1,66 +1,62 @@
-import Image from "next/image";
+import Link from "next/link";
 import styles from "./page.module.css";
 
 export default function Home() {
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>To get started, edit the page.tsx file.</h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <div className={styles.landing}>
+      <section className={styles.hero}>
+        <div className={styles.heroContent}>
+          {/* Logo */}
+          <div className={styles.logo}>
+            <div className={styles.logoIcon}>💵</div>
+            <span className={styles.logoText}>DFDII</span>
+          </div>
+
+          {/* Hero Text */}
+          <h1 className={styles.heroTitle}>
+            Dining for Dollars II
+          </h1>
+          <p className={styles.heroSubtitle}>
+            Track our club&apos;s portfolio performance, view holdings,
+            and stay informed with real-time market data.
           </p>
+
+          {/* Call to Actions */}
+          <div className={styles.heroCtas}>
+            <Link href="/login" className="btn btn-primary btn-lg">
+              Sign In
+            </Link>
+            <Link href="/signup" className="btn btn-secondary btn-lg">
+              Create Account
+            </Link>
+          </div>
+
+          {/* Stats Preview */}
+          <div className={styles.statsPreview}>
+            <div className={styles.statItem}>
+              <div className={styles.statLabel}>Portfolio Value</div>
+              <div className={styles.statValue}>$124,850</div>
+              <div className={`${styles.statChange} ${styles.positive}`}>
+                +12.4% YTD
+              </div>
+            </div>
+            <div className={styles.statItem}>
+              <div className={styles.statLabel}>Total Holdings</div>
+              <div className={styles.statValue}>18</div>
+              <div className={styles.statChange} style={{ color: 'var(--color-text-muted)' }}>
+                Diversified
+              </div>
+            </div>
+            <div className={styles.statItem}>
+              <div className={styles.statLabel}>Today&apos;s Change</div>
+              <div className={`${styles.statValue} ${styles.positive}`}>+$1,247</div>
+              <div className={`${styles.statChange} ${styles.positive}`}>
+                +1.01%
+              </div>
+            </div>
+          </div>
         </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+      </section>
     </div>
   );
 }

@@ -1,0 +1,302 @@
+.transactionsPage {
+    padding: var(--space-xl);
+    max-width: 1400px;
+}
+
+.transactionsHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-xl);
+    flex-wrap: wrap;
+    gap: var(--space-md);
+}
+
+.transactionsTitle {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+}
+
+.transactionsActions {
+    display: flex;
+    gap: var(--space-md);
+    align-items: center;
+}
+
+.filterSelect {
+    padding: var(--space-sm) var(--space-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    color: var(--color-text-primary);
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.filterSelect:hover {
+    border-color: var(--color-accent-primary);
+}
+
+.searchInput {
+    padding: var(--space-sm) var(--space-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    color: var(--color-text-primary);
+    font-size: 0.875rem;
+    min-width: 250px;
+    transition: all 0.2s;
+}
+
+.searchInput:focus {
+    outline: none;
+    border-color: var(--color-accent-primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Summary Cards */
+.summaryGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--space-lg);
+    margin-bottom: var(--space-xl);
+}
+
+.summaryCard {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+}
+
+.summaryLabel {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-sm);
+}
+
+.summaryValue {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+}
+
+.summaryValue.positive {
+    color: var(--color-success);
+}
+
+.summaryValue.negative {
+    color: var(--color-danger);
+}
+
+/* Transactions Table */
+.transactionsCard {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+}
+
+.tableContainer {
+    overflow-x: auto;
+}
+
+.transactionsTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.transactionsTable thead {
+    background: var(--color-background);
+    border-bottom: 2px solid var(--color-border);
+}
+
+.transactionsTable th {
+    padding: var(--space-md);
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+}
+
+.transactionsTable th:hover {
+    color: var(--color-accent-primary);
+}
+
+.transactionsTable tbody tr {
+    border-bottom: 1px solid var(--color-border);
+    transition: background-color 0.15s;
+}
+
+.transactionsTable tbody tr:hover {
+    background: var(--color-background);
+}
+
+.transactionsTable tbody tr:last-child {
+    border-bottom: none;
+}
+
+.transactionsTable td {
+    padding: var(--space-md);
+    font-size: 0.875rem;
+    color: var(--color-text-primary);
+}
+
+.dateCell {
+    font-family: var(--font-mono);
+    color: var(--color-text-secondary);
+    white-space: nowrap;
+}
+
+.symbolCell {
+    font-weight: 600;
+    font-family: var(--font-mono);
+    color: var(--color-text-primary);
+}
+
+.descriptionCell {
+    color: var(--color-text-secondary);
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.numericCell {
+    text-align: right;
+    font-family: var(--font-mono);
+    white-space: nowrap;
+}
+
+.numericCell.positive {
+    color: var(--color-success);
+    font-weight: 500;
+}
+
+.numericCell.negative {
+    color: var(--color-danger);
+    font-weight: 500;
+}
+
+/* Action Badges */
+.actionBadge {
+    display: inline-block;
+    padding: 0.25rem 0.625rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+}
+
+.badgeBuy {
+    background: rgba(34, 197, 94, 0.1);
+    color: var(--color-success);
+}
+
+.badgeSell {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--color-danger);
+}
+
+.badgeDividend {
+    background: rgba(59, 130, 246, 0.1);
+    color: var(--color-accent-primary);
+}
+
+.badgeDeposit {
+    background: rgba(168, 85, 247, 0.1);
+    color: #a855f7;
+}
+
+.badgeWithdrawal {
+    background: rgba(249, 115, 22, 0.1);
+    color: #f97316;
+}
+
+.badgeOther {
+    background: rgba(156, 163, 175, 0.1);
+    color: var(--color-text-secondary);
+}
+
+/* Sort Indicator */
+.sortIndicator {
+    margin-left: 0.25rem;
+    opacity: 0.4;
+    font-size: 0.75rem;
+}
+
+.sortActive {
+    opacity: 1;
+    color: var(--color-accent-primary);
+}
+
+/* Empty State */
+.emptyState {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-4xl) var(--space-xl);
+    text-align: center;
+}
+
+.emptyIcon {
+    font-size: 4rem;
+    margin-bottom: var(--space-lg);
+    opacity: 0.5;
+}
+
+.emptyTitle {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-sm);
+}
+
+.emptyText {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-lg);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .transactionsPage {
+        padding: var(--space-lg);
+    }
+
+    .transactionsHeader {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .transactionsActions {
+        flex-direction: column;
+    }
+
+    .filterSelect,
+    .searchInput {
+        width: 100%;
+    }
+
+    .summaryGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .transactionsTable {
+        font-size: 0.75rem;
+    }
+
+    .transactionsTable th,
+    .transactionsTable td {
+        padding: var(--space-sm);
+    }
+}
