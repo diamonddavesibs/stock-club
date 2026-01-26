@@ -57,20 +57,6 @@ export default function LoginPage() {
                     {/* Error Message */}
                     {error && <div className={styles.errorMessage}>{error}</div>}
 
-                    {/* Demo Credentials Info */}
-                    <div style={{
-                        padding: 'var(--space-md)',
-                        background: 'rgba(59, 130, 246, 0.1)',
-                        borderRadius: 'var(--radius-md)',
-                        marginBottom: 'var(--space-lg)',
-                        fontSize: '0.8125rem',
-                        color: 'var(--color-text-secondary)'
-                    }}>
-                        <strong>Demo Credentials:</strong><br />
-                        Email: member@dfdii.com<br />
-                        Password: password123
-                    </div>
-
                     {/* Form */}
                     <form onSubmit={handleSubmit} className={styles.authForm}>
                         <div className={styles.formGroup}>
@@ -101,9 +87,11 @@ export default function LoginPage() {
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
                             />
-                            <div className={styles.forgotPassword}>
-                                <Link href="/forgot-password">Forgot password?</Link>
-                            </div>
+                        </div>
+                        <div style={{ textAlign: "right", marginTop: "-0.5rem", marginBottom: "1rem" }}>
+                            <Link href="/forgot-password" style={{ fontSize: "0.875rem", color: "var(--color-accent-primary)", textDecoration: "none" }}>
+                                Forgot password?
+                            </Link>
                         </div>
 
                         <button

@@ -1,5 +1,8 @@
 import { auth } from "@/auth";
 
+// Force Node.js runtime to support crypto module
+export const runtime = 'nodejs';
+
 export default auth((req) => {
     const isLoggedIn = !!req.auth;
     const { nextUrl } = req;

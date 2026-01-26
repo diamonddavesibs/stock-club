@@ -6,7 +6,6 @@ import { useSession, signOut } from "next-auth/react";
 import dashStyles from "../dashboard.module.css";
 import styles from "./portfolio.module.css";
 import { PortfolioData, Holding } from "@/lib/types";
-import { loadPortfolioData, hasPortfolioData } from "@/lib/storage";
 
 // Sample data for when no real data is uploaded
 const sampleHoldings: Holding[] = [
@@ -33,14 +32,25 @@ export default function PortfolioPage() {
     const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
 
     useEffect(() => {
-        if (hasPortfolioData()) {
-            const data = loadPortfolioData();
-            if (data.holdings.length > 0) {
-                setPortfolioData(data);
-                setHasRealData(true);
+        const loadData = async () => {
+            if (!user?.id) return;
+
+            try {
+                const response = await fetch("/api/portfolio");
+                if (response.ok) {
+                    const { portfolio } = await response.json();
+                    if (portfolio.holdings.length > 0) {
+                        setPortfolioData(portfolio);
+                        setHasRealData(true);
+                    }
+                }
+            } catch (error) {
+                console.error("Failed to load portfolio data:", error);
             }
-        }
-    }, []);
+        };
+
+        loadData();
+    }, [user?.id]);
 
     const getInitials = (name: string) => {
         return name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);

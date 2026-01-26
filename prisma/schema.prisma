@@ -1,0 +1,151 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRES_PRISMA_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// User model with authentication and authorization
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String
+  password      String    // bcrypt hashed
+  role          Role      @default(MEMBER)
+
+  // Password reset fields
+  resetToken    String?   @unique
+  resetExpiry   DateTime?
+
+  // Timestamps
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  portfolio     Portfolio?
+  sessions      Session[]
+  accounts      Account[]
+
+  @@index([email])
+  @@index([resetToken])
+}
+
+enum Role {
+  ADMIN
+  MEMBER
+}
+
+// Portfolio data per user
+model Portfolio {
+  id                  String      @id @default(cuid())
+  userId              String      @unique
+  user                User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  totalValue          Float       @default(0)
+  totalCost           Float       @default(0)
+  totalGainLoss       Float       @default(0)
+  totalGainLossPercent Float      @default(0)
+  cashBalance         Float       @default(0)
+
+  lastUpdated         DateTime    @default(now())
+
+  holdings            Holding[]
+  transactions        Transaction[]
+
+  @@index([userId])
+}
+
+// Individual stock holdings
+model Holding {
+  id              String    @id @default(cuid())
+  portfolioId     String
+  portfolio       Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+
+  symbol          String
+  name            String
+  quantity        Float
+  costPerShare    Float
+  currentPrice    Float
+  marketValue     Float
+  gainLoss        Float
+  gainLossPercent Float
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([portfolioId])
+  @@index([symbol])
+}
+
+// Transaction history
+model Transaction {
+  id          String        @id @default(cuid())
+  portfolioId String
+  portfolio   Portfolio     @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+
+  date        DateTime
+  action      TransactionAction
+  symbol      String
+  description String
+  quantity    Float
+  price       Float
+  fees        Float
+  amount      Float
+
+  createdAt   DateTime      @default(now())
+
+  @@index([portfolioId])
+  @@index([date])
+  @@index([symbol])
+}
+
+enum TransactionAction {
+  BUY
+  SELL
+  DIVIDEND
+  DEPOSIT
+  WITHDRAWAL
+  OTHER
+}
+
+// NextAuth required models
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}

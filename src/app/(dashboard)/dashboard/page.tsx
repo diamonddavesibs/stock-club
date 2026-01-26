@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 import styles from "../dashboard.module.css";
 import { PortfolioData, Holding } from "@/lib/types";
-import { loadPortfolioData, hasPortfolioData } from "@/lib/storage";
 import PortfolioPerformanceChart from "@/components/charts/PortfolioPerformanceChart";
 import PortfolioAllocationChart from "@/components/charts/PortfolioAllocationChart";
 
@@ -33,16 +32,31 @@ export default function DashboardPage() {
     const [hasRealData, setHasRealData] = useState(false);
 
     useEffect(() => {
-        // Load portfolio data from localStorage
-        if (hasPortfolioData()) {
-            const data = loadPortfolioData();
-            if (data.holdings.length > 0) {
-                setPortfolioData(data);
-                setHasRealData(true);
+        // Load portfolio data from API
+        const loadData = async () => {
+            if (!user?.id) {
+                setIsLoading(false);
+                return;
             }
-        }
-        setIsLoading(false);
-    }, []);
+
+            try {
+                const response = await fetch("/api/portfolio");
+                if (response.ok) {
+                    const { portfolio } = await response.json();
+                    if (portfolio.holdings.length > 0) {
+                        setPortfolioData(portfolio);
+                        setHasRealData(true);
+                    }
+                }
+            } catch (error) {
+                console.error("Failed to load portfolio data:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        loadData();
+    }, [user?.id]);
 
     // Get initials for avatar
     const getInitials = (name: string) => {

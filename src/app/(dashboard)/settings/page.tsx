@@ -8,7 +8,6 @@ import dashStyles from "../dashboard.module.css";
 import styles from "./upload.module.css";
 import { Holding, PortfolioData } from "@/lib/types";
 import { parseSchwabPositionsCSV, parseSchwabTransactionsCSV, calculatePortfolioTotals } from "@/lib/schwab-parser";
-import { savePortfolioData } from "@/lib/storage";
 
 export default function UploadPage() {
     const { data: session } = useSession();
@@ -114,15 +113,28 @@ export default function UploadPage() {
         }
     };
 
-    const handleSave = () => {
-        if (!parsedData) return;
+    const handleSave = async () => {
+        if (!parsedData || !user?.id) return;
 
-        savePortfolioData(parsedData);
-        setSuccess("Portfolio data saved successfully! Redirecting to dashboard...");
+        try {
+            const response = await fetch("/api/portfolio/save", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(parsedData),
+            });
 
-        setTimeout(() => {
-            router.push("/dashboard");
-        }, 1500);
+            if (response.ok) {
+                setSuccess("Portfolio data saved successfully! Redirecting to dashboard...");
+
+                setTimeout(() => {
+                    router.push("/dashboard");
+                }, 1500);
+            } else {
+                setError("Failed to save portfolio data. Please try again.");
+            }
+        } catch (err) {
+            setError("Failed to save portfolio data. Please try again.");
+        }
     };
 
     const formatCurrency = (value: number) => {
