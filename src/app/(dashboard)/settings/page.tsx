@@ -7,7 +7,7 @@ import { useSession } from "next-auth/react";
 import dashStyles from "../dashboard.module.css";
 import styles from "./upload.module.css";
 import { Holding, PortfolioData } from "@/lib/types";
-import { parseSchwabPositionsCSV, parseSchwabTransactionsCSV, calculatePortfolioTotals } from "@/lib/schwab-parser";
+import { parseSchwabPositions, parseSchwabTransactions, calculatePortfolioTotals } from "@/lib/schwab-parser";
 
 export default function UploadPage() {
     const { data: session } = useSession();
@@ -53,14 +53,21 @@ export default function UploadPage() {
         const files = e.dataTransfer.files;
         if (files?.[0]) {
             const file = files[0];
-            if (!file.name.endsWith(".csv")) {
-                setError("Please upload a CSV file");
-                return;
-            }
+            const fileName = file.name.toLowerCase();
+
             if (type === "positions") {
+                if (!fileName.endsWith(".csv")) {
+                    setError("Please upload a CSV file for positions");
+                    return;
+                }
                 setPositionsFile(file);
                 await processFiles(file, transactionsFile);
             } else {
+                // Transactions can be CSV or JSON
+                if (!fileName.endsWith(".csv") && !fileName.endsWith(".json")) {
+                    setError("Please upload a CSV or JSON file for transactions");
+                    return;
+                }
                 setTransactionsFile(file);
                 await processFiles(positionsFile, file);
             }
@@ -71,14 +78,21 @@ export default function UploadPage() {
         setError("");
         const file = e.target.files?.[0];
         if (file) {
-            if (!file.name.endsWith(".csv")) {
-                setError("Please upload a CSV file");
-                return;
-            }
+            const fileName = file.name.toLowerCase();
+
             if (type === "positions") {
+                if (!fileName.endsWith(".csv")) {
+                    setError("Please upload a CSV file for positions");
+                    return;
+                }
                 setPositionsFile(file);
                 await processFiles(file, transactionsFile);
             } else {
+                // Transactions can be CSV or JSON
+                if (!fileName.endsWith(".csv") && !fileName.endsWith(".json")) {
+                    setError("Please upload a CSV or JSON file for transactions");
+                    return;
+                }
                 setTransactionsFile(file);
                 await processFiles(positionsFile, file);
             }
@@ -93,18 +107,19 @@ export default function UploadPage() {
 
         try {
             const positionsContent = await positions.text();
-            const holdings = parseSchwabPositionsCSV(positionsContent);
+            const holdings = parseSchwabPositions(positionsContent, positions.name);
 
-            let transactionsList: ReturnType<typeof parseSchwabTransactionsCSV> = [];
+            let transactionsList: ReturnType<typeof parseSchwabTransactions> = [];
             if (transactions) {
                 const transactionsContent = await transactions.text();
-                transactionsList = parseSchwabTransactionsCSV(transactionsContent);
+                // Auto-detects JSON or CSV based on content/filename
+                transactionsList = parseSchwabTransactions(transactionsContent, transactions.name);
             }
 
             const portfolioData = calculatePortfolioTotals(holdings, transactionsList);
             setParsedData(portfolioData);
         } catch (err) {
-            setError("Error parsing CSV file. Please make sure it's a valid Schwab export.");
+            setError("Error parsing file. Please make sure it's a valid Schwab export.");
             console.error(err);
         }
     };
@@ -441,15 +456,15 @@ export default function UploadPage() {
                             >
                                 <div className={styles.dropZoneIcon}>📁</div>
                                 <div className={styles.dropZoneText}>
-                                    Drag & drop your transactions CSV here
+                                    Drag & drop your transactions file here
                                 </div>
                                 <div className={styles.dropZoneHint}>
-                                    or click to browse files
+                                    Accepts CSV or JSON format
                                 </div>
                                 <input
                                     ref={transactionsInputRef}
                                     type="file"
-                                    accept=".csv"
+                                    accept=".csv,.json"
                                     className={styles.fileInput}
                                     onChange={(e) => handleFileSelect(e, "transactions")}
                                 />
@@ -552,10 +567,9 @@ export default function UploadPage() {
                         <h3 className={styles.instructionsTitle}>📘 How to Export from Schwab</h3>
                         <ol className={styles.instructionsList}>
                             <li>Log in to your Schwab account at schwab.com</li>
-                            <li>Go to <strong>Accounts</strong> → <strong>Positions</strong></li>
-                            <li>Click the <strong>Export</strong> button (usually top-right)</li>
-                            <li>Select <strong>CSV</strong> format and download</li>
-                            <li>Upload the downloaded file above</li>
+                            <li><strong>For Positions:</strong> Go to <strong>Accounts</strong> → <strong>Positions</strong> → Click <strong>Export</strong> → Select <strong>CSV</strong></li>
+                            <li><strong>For Transactions:</strong> Go to <strong>Accounts</strong> → <strong>History</strong> → Click <strong>Export</strong> → Select <strong>JSON</strong></li>
+                            <li>Upload the downloaded files above</li>
                         </ol>
                     </div>
                 </div>

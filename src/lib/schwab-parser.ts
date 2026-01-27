@@ -69,6 +69,49 @@ export function parseSchwabPositionsCSV(csvContent: string): Holding[] {
 }
 
 /**
+ * Parse Schwab Transaction History JSON export
+ * Schwab JSON format has: FromDate, ToDate, TotalTransactionsAmount, BrokerageTransactions[]
+ */
+export function parseSchwabTransactionsJSON(jsonContent: string): Transaction[] {
+    try {
+        const data = JSON.parse(jsonContent);
+        const transactions: Transaction[] = [];
+
+        // Handle the BrokerageTransactions array
+        const rawTransactions = data.BrokerageTransactions || data.transactions || [];
+
+        for (const tx of rawTransactions) {
+            const actionRaw = (tx.Action || "").toLowerCase();
+
+            // Map Schwab actions to our types
+            let action: Transaction["action"] = "OTHER";
+            if (actionRaw.includes("buy")) action = "BUY";
+            else if (actionRaw.includes("sell")) action = "SELL";
+            else if (actionRaw.includes("dividend") || actionRaw.includes("div")) action = "DIVIDEND";
+            else if (actionRaw.includes("deposit") || actionRaw.includes("transfer in")) action = "DEPOSIT";
+            else if (actionRaw.includes("withdraw") || actionRaw.includes("transfer out")) action = "WITHDRAWAL";
+            else if (actionRaw.includes("reinvest")) action = "DIVIDEND";
+
+            transactions.push({
+                date: tx.Date || "",
+                action,
+                symbol: (tx.Symbol || "--").toUpperCase(),
+                description: tx.Description || "",
+                quantity: Math.abs(parseNumber(tx.Quantity || "0")),
+                price: parseNumber(tx.Price || "0"),
+                fees: parseNumber(tx["Fees & Comm"] || tx.Fees || "0"),
+                amount: parseNumber(tx.Amount || "0"),
+            });
+        }
+
+        return transactions;
+    } catch (error) {
+        console.error("Failed to parse Schwab JSON:", error);
+        return [];
+    }
+}
+
+/**
  * Parse Schwab Transaction History CSV export
  * Expected columns: Date, Action, Symbol, Description, Quantity, Price, Fees & Comm, Amount
  */
@@ -195,6 +238,36 @@ function parseNumber(value: string): number {
     const cleaned = value.replace(/[$,\s]/g, "").replace(/^\((.+)\)$/, "-$1");
     const num = parseFloat(cleaned);
     return isNaN(num) ? 0 : num;
+}
+
+/**
+ * Auto-detect file format and parse transactions
+ * Accepts either JSON or CSV content
+ */
+export function parseSchwabTransactions(content: string, filename?: string): Transaction[] {
+    const trimmed = content.trim();
+
+    // Check if it's JSON (starts with { or [)
+    if (trimmed.startsWith("{") || trimmed.startsWith("[")) {
+        return parseSchwabTransactionsJSON(content);
+    }
+
+    // Check by filename extension
+    if (filename?.toLowerCase().endsWith(".json")) {
+        return parseSchwabTransactionsJSON(content);
+    }
+
+    // Default to CSV
+    return parseSchwabTransactionsCSV(content);
+}
+
+/**
+ * Auto-detect file format and parse positions
+ * Currently only CSV is supported for positions
+ */
+export function parseSchwabPositions(content: string, _filename?: string): Holding[] {
+    // Positions are always CSV from Schwab
+    return parseSchwabPositionsCSV(content);
 }
 
 export { emptyPortfolio };
