@@ -373,7 +373,9 @@ export default function UploadPage() {
                         </form>
                     </div>
 
-                    {/* Portfolio Upload Section */}
+                    {/* Portfolio Upload Section - Admin Only */}
+                    {user?.role === "ADMIN" && (
+                    <>
                     <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: 'var(--space-md)' }}>
                         Import Schwab Data
                     </h2>
@@ -572,6 +574,8 @@ export default function UploadPage() {
                             <li>Upload the downloaded files above</li>
                         </ol>
                     </div>
+                    </>
+                    )}
                 </div>
             </main>
         </div>
