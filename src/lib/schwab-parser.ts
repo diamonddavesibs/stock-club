@@ -93,7 +93,7 @@ export function parseSchwabTransactionsJSON(jsonContent: string): Transaction[] 
             else if (actionRaw.includes("reinvest")) action = "DIVIDEND";
 
             transactions.push({
-                date: tx.Date || "",
+                date: parseSchwabDate(tx.Date || ""),
                 action,
                 symbol: (tx.Symbol || "--").toUpperCase(),
                 description: tx.Description || "",
@@ -160,7 +160,7 @@ export function parseSchwabTransactionsCSV(csvContent: string): Transaction[] {
         else if (actionRaw.includes("withdraw") || actionRaw.includes("transfer out")) action = "WITHDRAWAL";
 
         transactions.push({
-            date,
+            date: parseSchwabDate(date),
             action,
             symbol: getValue(values, symbolCol).toUpperCase() || "--",
             description: getValue(values, descCol),
@@ -238,6 +238,35 @@ function parseNumber(value: string): number {
     const cleaned = value.replace(/[$,\s]/g, "").replace(/^\((.+)\)$/, "-$1");
     const num = parseFloat(cleaned);
     return isNaN(num) ? 0 : num;
+}
+
+/**
+ * Parse Schwab date format (MM/DD/YYYY) to ISO format (YYYY-MM-DD)
+ * Schwab exports dates as "01/26/2026" which JavaScript doesn't parse reliably
+ */
+function parseSchwabDate(dateStr: string): string {
+    if (!dateStr) return new Date().toISOString();
+
+    // Handle MM/DD/YYYY format
+    const slashMatch = dateStr.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+    if (slashMatch) {
+        const [, month, day, year] = slashMatch;
+        return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+    }
+
+    // Handle YYYY-MM-DD format (already ISO)
+    if (/^\d{4}-\d{2}-\d{2}/.test(dateStr)) {
+        return dateStr;
+    }
+
+    // Try to parse as-is and convert to ISO
+    const parsed = new Date(dateStr);
+    if (!isNaN(parsed.getTime())) {
+        return parsed.toISOString().split('T')[0];
+    }
+
+    // Fallback to current date
+    return new Date().toISOString().split('T')[0];
 }
 
 /**
