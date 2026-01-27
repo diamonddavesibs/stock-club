@@ -50,29 +50,25 @@ export async function savePortfolioData(userId: string, data: PortfolioData): Pr
             });
         }
 
-        // Add new transactions (don't delete old ones)
-        if (data.transactions.length > 0) {
-            // Only add transactions that don't already exist
-            const existingCount = await tx.transaction.count({
-                where: { portfolioId: portfolio.id },
-            });
+        // Delete existing transactions and create new ones (replace all)
+        await tx.transaction.deleteMany({
+            where: { portfolioId: portfolio.id },
+        });
 
-            if (existingCount < data.transactions.length) {
-                const newTransactions = data.transactions.slice(existingCount);
-                await tx.transaction.createMany({
-                    data: newTransactions.map((t: typeof data.transactions[0]) => ({
-                        portfolioId: portfolio.id,
-                        date: new Date(t.date),
-                        action: t.action,
-                        symbol: t.symbol,
-                        description: t.description,
-                        quantity: t.quantity,
-                        price: t.price,
-                        fees: t.fees,
-                        amount: t.amount,
-                    })),
-                });
-            }
+        if (data.transactions.length > 0) {
+            await tx.transaction.createMany({
+                data: data.transactions.map((t: typeof data.transactions[0]) => ({
+                    portfolioId: portfolio.id,
+                    date: new Date(t.date),
+                    action: t.action,
+                    symbol: t.symbol,
+                    description: t.description,
+                    quantity: t.quantity,
+                    price: t.price,
+                    fees: t.fees,
+                    amount: t.amount,
+                })),
+            });
         }
     });
 }
