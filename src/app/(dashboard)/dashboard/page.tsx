@@ -25,12 +25,23 @@ const sampleHoldings: Holding[] = [
     { symbol: "AMZN", name: "Amazon.com Inc.", quantity: 25, costPerShare: 145.00, currentPrice: 178.25, marketValue: 4456.25, gainLoss: 831.25, gainLossPercent: 22.9 },
 ];
 
+// Type for live stock prices
+interface LivePrice {
+    currentPrice: number;
+    change: number;
+    changePercent: number;
+    previousClose: number;
+}
+
 export default function DashboardPage() {
     const { data: session } = useSession();
     const user = session?.user;
     const [portfolioData, setPortfolioData] = useState<PortfolioData | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [hasRealData, setHasRealData] = useState(false);
+    const [livePrices, setLivePrices] = useState<Record<string, LivePrice>>({});
+    const [pricesLoading, setPricesLoading] = useState(false);
+    const [lastPriceUpdate, setLastPriceUpdate] = useState<Date | null>(null);
 
     useEffect(() => {
         // Load portfolio data from API
@@ -59,6 +70,53 @@ export default function DashboardPage() {
         loadData();
     }, [user?.id]);
 
+    // Fetch live prices when holdings are available
+    useEffect(() => {
+        const fetchLivePrices = async () => {
+            const holdingsToPrice = hasRealData && portfolioData
+                ? portfolioData.holdings
+                : sampleHoldings;
+
+            if (holdingsToPrice.length === 0) return;
+
+            setPricesLoading(true);
+            try {
+                const symbols = holdingsToPrice.map(h => h.symbol);
+                const response = await fetch("/api/stock-prices", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ symbols }),
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.quotes) {
+                        const prices: Record<string, LivePrice> = {};
+                        Object.entries(data.quotes).forEach(([symbol, quote]: [string, any]) => {
+                            prices[symbol] = {
+                                currentPrice: quote.currentPrice,
+                                change: quote.change,
+                                changePercent: quote.changePercent,
+                                previousClose: quote.previousClose,
+                            };
+                        });
+                        setLivePrices(prices);
+                        setLastPriceUpdate(new Date());
+                    }
+                }
+            } catch (error) {
+                console.error("Failed to fetch live prices:", error);
+            } finally {
+                setPricesLoading(false);
+            }
+        };
+
+        // Fetch immediately and then every 5 minutes
+        fetchLivePrices();
+        const interval = setInterval(fetchLivePrices, 5 * 60 * 1000);
+        return () => clearInterval(interval);
+    }, [hasRealData, portfolioData]);
+
     // Get initials for avatar
     const getInitials = (name: string) => {
         return name
@@ -86,14 +144,78 @@ export default function DashboardPage() {
         return `${value >= 0 ? "+" : ""}${value.toFixed(1)}%`;
     };
 
-    // Determine which data to display
-    const holdings = hasRealData && portfolioData ? portfolioData.holdings : sampleHoldings;
-    const stats = hasRealData && portfolioData
+    // Determine which data to display, merging live prices when available
+    const baseHoldings = hasRealData && portfolioData ? portfolioData.holdings : sampleHoldings;
+
+    // Update holdings with live prices
+    const holdings = useMemo(() => {
+        if (Object.keys(livePrices).length === 0) {
+            return baseHoldings;
+        }
+
+        return baseHoldings.map(holding => {
+            const livePrice = livePrices[holding.symbol];
+            if (!livePrice) return holding;
+
+            const newMarketValue = holding.quantity * livePrice.currentPrice;
+            const totalCost = holding.quantity * holding.costPerShare;
+            const newGainLoss = newMarketValue - totalCost;
+            const newGainLossPercent = totalCost > 0 ? (newGainLoss / totalCost) * 100 : 0;
+
+            return {
+                ...holding,
+                currentPrice: livePrice.currentPrice,
+                marketValue: newMarketValue,
+                gainLoss: newGainLoss,
+                gainLossPercent: newGainLossPercent,
+            };
+        });
+    }, [baseHoldings, livePrices]);
+
+    // Calculate today's change from live prices
+    const todaysChange = useMemo(() => {
+        if (Object.keys(livePrices).length === 0) {
+            return { value: 0, percent: 0 };
+        }
+
+        let totalChange = 0;
+        let totalPreviousValue = 0;
+
+        baseHoldings.forEach(holding => {
+            const livePrice = livePrices[holding.symbol];
+            if (livePrice) {
+                totalChange += holding.quantity * livePrice.change;
+                totalPreviousValue += holding.quantity * livePrice.previousClose;
+            }
+        });
+
+        const percent = totalPreviousValue > 0 ? (totalChange / totalPreviousValue) * 100 : 0;
+        return { value: totalChange, percent };
+    }, [baseHoldings, livePrices]);
+
+    // Calculate total portfolio value with live prices
+    const totalPortfolioValue = useMemo(() => {
+        return holdings.reduce((sum, h) => sum + h.marketValue, 0);
+    }, [holdings]);
+
+    const totalGainLoss = useMemo(() => {
+        const totalCost = holdings.reduce((sum, h) => sum + (h.costPerShare * h.quantity), 0);
+        return totalPortfolioValue - totalCost;
+    }, [holdings, totalPortfolioValue]);
+
+    const totalGainLossPercent = useMemo(() => {
+        const totalCost = holdings.reduce((sum, h) => sum + (h.costPerShare * h.quantity), 0);
+        return totalCost > 0 ? (totalGainLoss / totalCost) * 100 : 0;
+    }, [holdings, totalGainLoss]);
+
+    const hasLivePrices = Object.keys(livePrices).length > 0;
+
+    const stats = hasRealData || hasLivePrices
         ? [
-            { label: "Portfolio Value", value: formatCurrency(portfolioData.totalValue), change: formatPercent(portfolioData.totalGainLossPercent), positive: portfolioData.totalGainLossPercent >= 0, icon: "💰" },
-            { label: "Today's Change", value: "--", change: "Refresh for live data", positive: true, icon: "📈" },
-            { label: "Total Gain/Loss", value: formatCurrency(portfolioData.totalGainLoss), change: formatPercent(portfolioData.totalGainLossPercent), positive: portfolioData.totalGainLoss >= 0, icon: "🎯" },
-            { label: "Holdings", value: String(portfolioData.holdings.length), change: "positions", positive: true, icon: "📊" },
+            { label: "Portfolio Value", value: formatCurrency(totalPortfolioValue), change: formatPercent(totalGainLossPercent), positive: totalGainLossPercent >= 0, icon: "💰" },
+            { label: "Today's Change", value: hasLivePrices ? formatCurrency(todaysChange.value) : "--", change: hasLivePrices ? formatPercent(todaysChange.percent) : (pricesLoading ? "Loading..." : "No live data"), positive: todaysChange.value >= 0, icon: "📈" },
+            { label: "Total Gain/Loss", value: formatCurrency(totalGainLoss), change: formatPercent(totalGainLossPercent), positive: totalGainLoss >= 0, icon: "🎯" },
+            { label: "Holdings", value: String(holdings.length), change: hasLivePrices ? `Updated ${lastPriceUpdate?.toLocaleTimeString() || ''}` : "positions", positive: true, icon: "📊" },
         ]
         : sampleStats;
 
