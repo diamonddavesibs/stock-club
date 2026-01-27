@@ -7,6 +7,7 @@ import styles from "../dashboard.module.css";
 import { PortfolioData, Holding } from "@/lib/types";
 import PortfolioPerformanceChart from "@/components/charts/PortfolioPerformanceChart";
 import PortfolioAllocationChart from "@/components/charts/PortfolioAllocationChart";
+import StockTicker from "@/components/StockTicker";
 
 // Sample data - used when no Schwab data is uploaded
 const sampleStats = [
@@ -220,6 +221,9 @@ export default function DashboardPage() {
                         </div>
                     </div>
                 </header>
+
+                {/* Stock Ticker */}
+                <StockTicker holdings={holdings} />
 
                 <div className={styles.pageContent}>
                     {/* Sample Data Notice */}

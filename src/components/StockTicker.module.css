@@ -1,0 +1,119 @@
+.tickerWrapper {
+    width: 100%;
+    overflow: hidden;
+    background: linear-gradient(
+        90deg,
+        var(--color-bg-tertiary) 0%,
+        var(--color-bg-secondary) 10%,
+        var(--color-bg-secondary) 90%,
+        var(--color-bg-tertiary) 100%
+    );
+    border-bottom: 1px solid var(--color-border);
+    padding: var(--space-sm) 0;
+    position: relative;
+}
+
+.tickerWrapper::before,
+.tickerWrapper::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 60px;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.tickerWrapper::before {
+    left: 0;
+    background: linear-gradient(90deg, var(--color-bg-tertiary), transparent);
+}
+
+.tickerWrapper::after {
+    right: 0;
+    background: linear-gradient(90deg, transparent, var(--color-bg-tertiary));
+}
+
+.tickerTrack {
+    display: flex;
+    width: fit-content;
+}
+
+.tickerContent {
+    display: flex;
+    animation: scroll 40s linear infinite;
+}
+
+.tickerContent:hover {
+    animation-play-state: paused;
+}
+
+@keyframes scroll {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+.tickerItem {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: 0 var(--space-lg);
+    border-right: 1px solid var(--color-border);
+    white-space: nowrap;
+}
+
+.tickerItem:last-child {
+    border-right: none;
+}
+
+.tickerSymbol {
+    font-weight: 700;
+    font-size: 0.875rem;
+    color: var(--color-text-primary);
+    font-family: var(--font-mono);
+    letter-spacing: 0.5px;
+}
+
+.tickerPrice {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    font-family: var(--font-mono);
+}
+
+.tickerChange {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+}
+
+.tickerChange.positive {
+    color: var(--color-success);
+    background: rgba(34, 197, 94, 0.1);
+}
+
+.tickerChange.negative {
+    color: var(--color-danger);
+    background: rgba(239, 68, 68, 0.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .tickerItem {
+        padding: 0 var(--space-md);
+    }
+
+    .tickerSymbol,
+    .tickerPrice {
+        font-size: 0.8125rem;
+    }
+
+    .tickerChange {
+        font-size: 0.6875rem;
+    }
+}
