@@ -255,7 +255,7 @@ export default function StockDetailPage() {
                                                     borderRadius: "8px",
                                                     color: "#fff",
                                                 }}
-                                                formatter={(value: number) => [formatCurrency(value), "Price"]}
+                                                formatter={(value?: number) => [formatCurrency(value ?? 0), "Price"]}
                                                 labelFormatter={(label: string) => {
                                                     const d = new Date(label);
                                                     return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
