@@ -4,15 +4,21 @@ import { useMemo } from "react";
 import styles from "./StockTicker.module.css";
 import { Holding } from "@/lib/types";
 
-interface StockTickerProps {
-    holdings: Holding[];
+interface LivePrice {
+    currentPrice: number;
+    change: number;
+    changePercent: number;
+    previousClose: number;
 }
 
-export default function StockTicker({ holdings }: StockTickerProps) {
-    // Duplicate holdings for seamless infinite scroll
+interface StockTickerProps {
+    holdings: Holding[];
+    livePrices?: Record<string, LivePrice>;
+}
+
+export default function StockTicker({ holdings, livePrices = {} }: StockTickerProps) {
     const tickerItems = useMemo(() => {
         if (holdings.length === 0) return [];
-        // Duplicate the array to create seamless loop
         return [...holdings, ...holdings];
     }, [holdings]);
 
@@ -33,27 +39,48 @@ export default function StockTicker({ holdings }: StockTickerProps) {
         return `${sign}${value.toFixed(2)}%`;
     };
 
+    const formatChange = (value: number) => {
+        const sign = value >= 0 ? "+" : "";
+        return `${sign}${value.toFixed(2)}`;
+    };
+
     return (
         <div className={styles.tickerWrapper}>
             <div className={styles.tickerTrack}>
                 <div className={styles.tickerContent}>
-                    {tickerItems.map((holding, index) => (
-                        <div key={`${holding.symbol}-${index}`} className={styles.tickerItem}>
-                            <span className={styles.tickerSymbol}>{holding.symbol}</span>
-                            <span className={styles.tickerPrice}>
-                                {formatPrice(holding.currentPrice)}
-                            </span>
-                            <span
-                                className={`${styles.tickerChange} ${
-                                    holding.gainLossPercent >= 0
-                                        ? styles.positive
-                                        : styles.negative
-                                }`}
-                            >
-                                {formatPercent(holding.gainLossPercent)}
-                            </span>
-                        </div>
-                    ))}
+                    {tickerItems.map((holding, index) => {
+                        const live = livePrices[holding.symbol];
+                        const price = live?.currentPrice || holding.currentPrice;
+                        const change = live?.change ?? 0;
+                        const changePercent = live?.changePercent ?? 0;
+                        const hasLive = !!live;
+
+                        return (
+                            <div key={`${holding.symbol}-${index}`} className={styles.tickerItem}>
+                                <span className={styles.tickerSymbol}>{holding.symbol}</span>
+                                <span className={styles.tickerPrice}>
+                                    {formatPrice(price)}
+                                </span>
+                                {hasLive ? (
+                                    <span
+                                        className={`${styles.tickerChange} ${
+                                            change >= 0 ? styles.positive : styles.negative
+                                        }`}
+                                    >
+                                        {formatChange(change)} ({formatPercent(changePercent)})
+                                    </span>
+                                ) : (
+                                    <span
+                                        className={`${styles.tickerChange} ${
+                                            holding.gainLossPercent >= 0 ? styles.positive : styles.negative
+                                        }`}
+                                    >
+                                        {formatPercent(holding.gainLossPercent)}
+                                    </span>
+                                )}
+                            </div>
+                        );
+                    })}
                 </div>
             </div>
         </div>

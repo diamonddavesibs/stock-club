@@ -345,7 +345,7 @@ export default function DashboardPage() {
                 </header>
 
                 {/* Stock Ticker */}
-                <StockTicker holdings={holdings} />
+                <StockTicker holdings={holdings} livePrices={livePrices} />
 
                 <div className={styles.pageContent}>
                     {/* Sample Data Notice */}
