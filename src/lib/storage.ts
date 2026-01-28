@@ -75,9 +75,11 @@ export async function savePortfolioData(userId: string, data: PortfolioData): Pr
 
 /**
  * Load portfolio data from database
+ * For a stock club, all members share the same portfolio.
+ * If the user has no portfolio, load the club portfolio (uploaded by an admin).
  */
 export async function loadPortfolioData(userId: string): Promise<PortfolioData> {
-    const portfolio = await prisma.portfolio.findUnique({
+    let portfolio = await prisma.portfolio.findUnique({
         where: { userId },
         include: {
             holdings: true,
@@ -86,6 +88,24 @@ export async function loadPortfolioData(userId: string): Promise<PortfolioData> 
             },
         },
     });
+
+    // If user has no portfolio, load the shared club portfolio from an admin
+    if (!portfolio) {
+        const adminUser = await prisma.user.findFirst({
+            where: { role: "ADMIN" },
+            include: {
+                portfolio: {
+                    include: {
+                        holdings: true,
+                        transactions: {
+                            orderBy: { date: 'desc' },
+                        },
+                    },
+                },
+            },
+        });
+        portfolio = adminUser?.portfolio ?? null;
+    }
 
     if (!portfolio) {
         return emptyPortfolio;
