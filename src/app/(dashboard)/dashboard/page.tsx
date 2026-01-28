@@ -432,7 +432,7 @@ export default function DashboardPage() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {holdings.slice(0, 5).map((stock) => (
+                                {holdings.map((stock) => (
                                     <tr key={stock.symbol}>
                                         <td>
                                             <div className={styles.stockSymbol}>{stock.symbol}</div>
@@ -451,10 +451,10 @@ export default function DashboardPage() {
                                 ))}
                             </tbody>
                         </table>
-                        {holdings.length > 5 && (
+                        {holdings.length > 0 && (
                             <p style={{ textAlign: 'center', color: 'var(--color-text-muted)', marginTop: 'var(--space-md)', fontSize: '0.875rem' }}>
                                 <Link href="/portfolio" style={{ color: 'var(--color-accent-primary)' }}>
-                                    View all {holdings.length} holdings →
+                                    View detailed portfolio →
                                 </Link>
                             </p>
                         )}
