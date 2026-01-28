@@ -286,15 +286,17 @@ export default function PortfolioPage() {
                                             return (
                                                 <tr key={holding.symbol}>
                                                     <td>
-                                                        <div className={styles.symbolCell}>
-                                                            <div className={styles.symbolIcon}>
-                                                                {holding.symbol.slice(0, 2)}
+                                                        <Link href={`/stock/${holding.symbol}`} style={{ textDecoration: 'none' }}>
+                                                            <div className={styles.symbolCell}>
+                                                                <div className={styles.symbolIcon}>
+                                                                    {holding.symbol.slice(0, 2)}
+                                                                </div>
+                                                                <div className={styles.symbolInfo}>
+                                                                    <span className={styles.symbolName} style={{ color: 'var(--color-accent-primary)' }}>{holding.symbol}</span>
+                                                                    <span className={styles.symbolDescription}>{holding.name}</span>
+                                                                </div>
                                                             </div>
-                                                            <div className={styles.symbolInfo}>
-                                                                <span className={styles.symbolName}>{holding.symbol}</span>
-                                                                <span className={styles.symbolDescription}>{holding.name}</span>
-                                                            </div>
-                                                        </div>
+                                                        </Link>
                                                     </td>
                                                     <td className={styles.numericCell}>{holding.quantity.toFixed(2)}</td>
                                                     <td className={styles.numericCell}>{formatCurrency(holding.costPerShare)}</td>

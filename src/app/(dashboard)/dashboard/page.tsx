@@ -435,8 +435,10 @@ export default function DashboardPage() {
                                 {holdings.map((stock) => (
                                     <tr key={stock.symbol}>
                                         <td>
-                                            <div className={styles.stockSymbol}>{stock.symbol}</div>
-                                            <div className={styles.stockName}>{stock.name}</div>
+                                            <Link href={`/stock/${stock.symbol}`} style={{ textDecoration: 'none' }}>
+                                                <div className={styles.stockSymbol} style={{ cursor: 'pointer', color: 'var(--color-accent-primary)' }}>{stock.symbol}</div>
+                                                <div className={styles.stockName}>{stock.name}</div>
+                                            </Link>
                                         </td>
                                         <td>{stock.quantity.toFixed(2)}</td>
                                         <td className={styles.stockPrice}>${stock.costPerShare.toFixed(2)}</td>

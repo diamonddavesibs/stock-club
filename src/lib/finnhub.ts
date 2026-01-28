@@ -150,3 +150,77 @@ export function getCacheStats(): { size: number; symbols: string[] } {
         symbols: Array.from(priceCache.keys()),
     };
 }
+
+export interface StockCandle {
+    date: string;   // ISO date string
+    open: number;
+    high: number;
+    low: number;
+    close: number;
+    volume: number;
+}
+
+interface FinnhubCandleResponse {
+    c: number[];  // Close prices
+    h: number[];  // High prices
+    l: number[];  // Low prices
+    o: number[];  // Open prices
+    t: number[];  // Timestamps (Unix)
+    v: number[];  // Volume
+    s: string;    // Status: "ok" or "no_data"
+}
+
+/**
+ * Fetch historical candle data from Finnhub
+ * @param symbol Stock symbol
+ * @param range Time range: "1W", "1M", "3M", "6M", "1Y"
+ */
+export async function getStockCandles(symbol: string, range: string = "1M"): Promise<StockCandle[]> {
+    if (!FINNHUB_API_KEY) {
+        console.warn("FINNHUB_API_KEY not set");
+        return [];
+    }
+
+    const now = Math.floor(Date.now() / 1000);
+    let from: number;
+
+    switch (range) {
+        case "1W":  from = now - 7 * 24 * 60 * 60; break;
+        case "1M":  from = now - 30 * 24 * 60 * 60; break;
+        case "3M":  from = now - 90 * 24 * 60 * 60; break;
+        case "6M":  from = now - 180 * 24 * 60 * 60; break;
+        case "1Y":  from = now - 365 * 24 * 60 * 60; break;
+        default:    from = now - 30 * 24 * 60 * 60; break;
+    }
+
+    try {
+        const response = await fetch(
+            `${FINNHUB_BASE_URL}/stock/candle?symbol=${encodeURIComponent(symbol)}&resolution=D&from=${from}&to=${now}&token=${FINNHUB_API_KEY}`,
+            { next: { revalidate: 300 } }
+        );
+
+        if (!response.ok) {
+            console.error(`Finnhub candle API error for ${symbol}: ${response.status}`);
+            return [];
+        }
+
+        const data: FinnhubCandleResponse = await response.json();
+
+        if (data.s !== "ok" || !data.c || data.c.length === 0) {
+            console.warn(`No candle data for ${symbol}`);
+            return [];
+        }
+
+        return data.t.map((timestamp, i) => ({
+            date: new Date(timestamp * 1000).toISOString().split("T")[0],
+            open: data.o[i],
+            high: data.h[i],
+            low: data.l[i],
+            close: data.c[i],
+            volume: data.v[i],
+        }));
+    } catch (error) {
+        console.error(`Failed to fetch candles for ${symbol}:`, error);
+        return [];
+    }
+}
