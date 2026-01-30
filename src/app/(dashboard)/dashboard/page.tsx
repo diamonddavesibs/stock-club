@@ -43,6 +43,7 @@ export default function DashboardPage() {
     const [livePrices, setLivePrices] = useState<Record<string, LivePrice>>({});
     const [pricesLoading, setPricesLoading] = useState(false);
     const [lastPriceUpdate, setLastPriceUpdate] = useState<Date | null>(null);
+    const [sidebarOpen, setSidebarOpen] = useState(false);
 
     useEffect(() => {
         // Load portfolio data from API
@@ -273,8 +274,14 @@ export default function DashboardPage() {
 
     return (
         <div className={styles.dashboardLayout}>
+            {/* Sidebar overlay for mobile */}
+            <div
+                className={`${styles.sidebarOverlay} ${sidebarOpen ? styles.sidebarOverlayVisible : ""}`}
+                onClick={() => setSidebarOpen(false)}
+            />
+
             {/* Sidebar */}
-            <aside className={styles.sidebar}>
+            <aside className={`${styles.sidebar} ${sidebarOpen ? styles.sidebarOpen : ""}`}>
                 <div className={styles.sidebarHeader}>
                     <Link href="/dashboard" className={styles.sidebarLogo}>
                         <div className={styles.sidebarLogoIcon}>💵</div>
@@ -282,7 +289,7 @@ export default function DashboardPage() {
                     </Link>
                 </div>
 
-                <nav className={styles.sidebarNav}>
+                <nav className={styles.sidebarNav} onClick={() => setSidebarOpen(false)}>
                     <Link href="/dashboard" className={`${styles.navItem} ${styles.navItemActive}`}>
                         <span className={styles.navIcon}>📊</span>
                         Dashboard
@@ -330,7 +337,12 @@ export default function DashboardPage() {
             <main className={styles.mainContent}>
                 <header className={styles.header}>
                     <div className={styles.headerContent}>
-                        <h1 className={styles.pageTitle}>Dashboard</h1>
+                        <div style={{ display: "flex", alignItems: "center", gap: "var(--space-sm)" }}>
+                            <button className={styles.menuButton} onClick={() => setSidebarOpen(true)}>
+                                ☰
+                            </button>
+                            <h1 className={styles.pageTitle}>Dashboard</h1>
+                        </div>
                         <div className={styles.headerActions}>
                             <StockSearch />
                             {hasRealData ? (
