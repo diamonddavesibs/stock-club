@@ -24,6 +24,31 @@ interface CandlePoint {
     close: number;
 }
 
+interface StockDetailsData {
+    longName?: string;
+    sector?: string;
+    industry?: string;
+    website?: string;
+    description?: string;
+    marketCap?: number;
+    trailingPE?: number;
+    forwardPE?: number;
+    eps?: number;
+    dividendYield?: number;
+    fiftyTwoWeekHigh?: number;
+    fiftyTwoWeekLow?: number;
+    volume?: number;
+    avgVolume?: number;
+    beta?: number;
+    recommendations?: {
+        strongBuy: number;
+        buy: number;
+        hold: number;
+        sell: number;
+        strongSell: number;
+    };
+}
+
 const RANGES = ["5D", "1W", "1M", "3M", "6M", "1Y"] as const;
 
 export default function StockDetailPage() {
@@ -34,6 +59,7 @@ export default function StockDetailPage() {
 
     const [holding, setHolding] = useState<Holding | null>(null);
     const [quote, setQuote] = useState<LiveQuote | null>(null);
+    const [details, setDetails] = useState<StockDetailsData | null>(null);
     const [candles, setCandles] = useState<CandlePoint[]>([]);
     const [range, setRange] = useState<string>("1M");
     const [loading, setLoading] = useState(true);
@@ -91,6 +117,22 @@ export default function StockDetailPage() {
         if (symbol) fetchQuote();
     }, [symbol]);
 
+    // Fetch stock details
+    useEffect(() => {
+        const fetchDetails = async () => {
+            try {
+                const res = await fetch(`/api/stock-details?symbol=${symbol}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.details) setDetails(data.details);
+                }
+            } catch (err) {
+                console.error("Failed to fetch stock details:", err);
+            }
+        };
+        if (symbol) fetchDetails();
+    }, [symbol]);
+
     // Fetch candle data
     const fetchCandles = useCallback(async (r: string) => {
         setChartLoading(true);
@@ -126,6 +168,20 @@ export default function StockDetailPage() {
     const formatCurrency = (val: number) =>
         val.toLocaleString("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 2 });
 
+    const formatLargeNumber = (val: number) => {
+        if (val >= 1e12) return `$${(val / 1e12).toFixed(2)}T`;
+        if (val >= 1e9) return `$${(val / 1e9).toFixed(2)}B`;
+        if (val >= 1e6) return `$${(val / 1e6).toFixed(2)}M`;
+        return `$${val.toLocaleString()}`;
+    };
+
+    const formatVolume = (val: number) => {
+        if (val >= 1e9) return `${(val / 1e9).toFixed(2)}B`;
+        if (val >= 1e6) return `${(val / 1e6).toFixed(2)}M`;
+        if (val >= 1e3) return `${(val / 1e3).toFixed(1)}K`;
+        return val.toLocaleString();
+    };
+
     const price = quote?.currentPrice ?? holding?.currentPrice ?? 0;
     const change = quote?.change ?? 0;
     const changePercent = quote?.changePercent ?? 0;
@@ -139,13 +195,19 @@ export default function StockDetailPage() {
     const gainLoss = currentValue - totalCost;
     const returnPct = totalCost > 0 ? (gainLoss / totalCost) * 100 : 0;
 
+    const companyName = details?.longName ?? holding?.name;
+
+    // Recommendation bar
+    const rec = details?.recommendations;
+    const totalRec = rec ? rec.strongBuy + rec.buy + rec.hold + rec.sell + rec.strongSell : 0;
+
     return (
         <div className={dashStyles.dashboardLayout}>
             {/* Sidebar */}
             <aside className={dashStyles.sidebar}>
                 <div className={dashStyles.sidebarHeader}>
                     <Link href="/dashboard" className={dashStyles.sidebarLogo}>
-                        <div className={dashStyles.sidebarLogoIcon}>💵</div>
+                        <div className={dashStyles.sidebarLogoIcon}>$</div>
                         <span className={dashStyles.sidebarLogoText}>DFDII</span>
                     </Link>
                 </div>
@@ -201,8 +263,13 @@ export default function StockDetailPage() {
                             <div className={styles.stockHeader}>
                                 <div>
                                     <span className={styles.symbolTitle}>{symbol}</span>
-                                    {holding && (
-                                        <span className={styles.companyName}> {holding.name}</span>
+                                    {companyName && (
+                                        <span className={styles.companyName}> {companyName}</span>
+                                    )}
+                                    {details?.sector && (
+                                        <div className={styles.sectorBadge}>
+                                            {details.sector}{details.industry ? ` · ${details.industry}` : ""}
+                                        </div>
                                     )}
                                 </div>
                                 <div className={styles.priceSection}>
@@ -301,6 +368,73 @@ export default function StockDetailPage() {
                                     </div>
                                 </div>
 
+                                {/* Key Statistics */}
+                                {details && (
+                                    <div className={styles.detailCard}>
+                                        <h3 className={styles.detailCardTitle}>Key Statistics</h3>
+                                        {details.marketCap != null && (
+                                            <div className={styles.detailRow}>
+                                                <span className={styles.detailLabel}>Market Cap</span>
+                                                <span className={styles.detailValue}>{formatLargeNumber(details.marketCap)}</span>
+                                            </div>
+                                        )}
+                                        {details.trailingPE != null && (
+                                            <div className={styles.detailRow}>
+                                                <span className={styles.detailLabel}>P/E (TTM)</span>
+                                                <span className={styles.detailValue}>{details.trailingPE.toFixed(2)}</span>
+                                            </div>
+                                        )}
+                                        {details.forwardPE != null && (
+                                            <div className={styles.detailRow}>
+                                                <span className={styles.detailLabel}>Forward P/E</span>
+                                                <span className={styles.detailValue}>{details.forwardPE.toFixed(2)}</span>
+                                            </div>
+                                        )}
+                                        {details.eps != null && (
+                                            <div className={styles.detailRow}>
+                                                <span className={styles.detailLabel}>EPS (TTM)</span>
+                                                <span className={styles.detailValue}>{formatCurrency(details.eps)}</span>
+                                            </div>
+                                        )}
+                                        {details.dividendYield != null && (
+                                            <div className={styles.detailRow}>
+                                                <span className={styles.detailLabel}>Dividend Yield</span>
+                                                <span className={styles.detailValue}>{(details.dividendYield * 100).toFixed(2)}%</span>
+                                            </div>
+                                        )}
+                                        {details.beta != null && (
+                                            <div className={styles.detailRow}>
+                                                <span className={styles.detailLabel}>Beta</span>
+                                                <span className={styles.detailValue}>{details.beta.toFixed(2)}</span>
+                                            </div>
+                                        )}
+                                        {details.fiftyTwoWeekHigh != null && (
+                                            <div className={styles.detailRow}>
+                                                <span className={styles.detailLabel}>52W High</span>
+                                                <span className={styles.detailValue}>{formatCurrency(details.fiftyTwoWeekHigh)}</span>
+                                            </div>
+                                        )}
+                                        {details.fiftyTwoWeekLow != null && (
+                                            <div className={styles.detailRow}>
+                                                <span className={styles.detailLabel}>52W Low</span>
+                                                <span className={styles.detailValue}>{formatCurrency(details.fiftyTwoWeekLow)}</span>
+                                            </div>
+                                        )}
+                                        {details.volume != null && (
+                                            <div className={styles.detailRow}>
+                                                <span className={styles.detailLabel}>Volume</span>
+                                                <span className={styles.detailValue}>{formatVolume(details.volume)}</span>
+                                            </div>
+                                        )}
+                                        {details.avgVolume != null && (
+                                            <div className={styles.detailRow}>
+                                                <span className={styles.detailLabel}>Avg Volume</span>
+                                                <span className={styles.detailValue}>{formatVolume(details.avgVolume)}</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+
                                 {/* Holdings Details */}
                                 {holding && (
                                     <div className={styles.detailCard}>
@@ -336,6 +470,75 @@ export default function StockDetailPage() {
                                     </div>
                                 )}
                             </div>
+
+                            {/* Analyst Recommendations */}
+                            {rec && totalRec > 0 && (
+                                <div className={styles.detailCard} style={{ marginBottom: "var(--space-xl)" }}>
+                                    <h3 className={styles.detailCardTitle}>Analyst Recommendations</h3>
+                                    <div className={styles.recBar}>
+                                        {rec.strongBuy > 0 && (
+                                            <div
+                                                className={styles.recSegment}
+                                                style={{ width: `${(rec.strongBuy / totalRec) * 100}%`, background: "#16a34a" }}
+                                                title={`Strong Buy: ${rec.strongBuy}`}
+                                            />
+                                        )}
+                                        {rec.buy > 0 && (
+                                            <div
+                                                className={styles.recSegment}
+                                                style={{ width: `${(rec.buy / totalRec) * 100}%`, background: "#4ade80" }}
+                                                title={`Buy: ${rec.buy}`}
+                                            />
+                                        )}
+                                        {rec.hold > 0 && (
+                                            <div
+                                                className={styles.recSegment}
+                                                style={{ width: `${(rec.hold / totalRec) * 100}%`, background: "#facc15" }}
+                                                title={`Hold: ${rec.hold}`}
+                                            />
+                                        )}
+                                        {rec.sell > 0 && (
+                                            <div
+                                                className={styles.recSegment}
+                                                style={{ width: `${(rec.sell / totalRec) * 100}%`, background: "#f97316" }}
+                                                title={`Sell: ${rec.sell}`}
+                                            />
+                                        )}
+                                        {rec.strongSell > 0 && (
+                                            <div
+                                                className={styles.recSegment}
+                                                style={{ width: `${(rec.strongSell / totalRec) * 100}%`, background: "#ef4444" }}
+                                                title={`Strong Sell: ${rec.strongSell}`}
+                                            />
+                                        )}
+                                    </div>
+                                    <div className={styles.recLabels}>
+                                        <span style={{ color: "#16a34a" }}>Strong Buy: {rec.strongBuy}</span>
+                                        <span style={{ color: "#4ade80" }}>Buy: {rec.buy}</span>
+                                        <span style={{ color: "#facc15" }}>Hold: {rec.hold}</span>
+                                        <span style={{ color: "#f97316" }}>Sell: {rec.sell}</span>
+                                        <span style={{ color: "#ef4444" }}>Strong Sell: {rec.strongSell}</span>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Company Description */}
+                            {details?.description && (
+                                <div className={styles.detailCard}>
+                                    <h3 className={styles.detailCardTitle}>About {companyName || symbol}</h3>
+                                    <p className={styles.companyDescription}>{details.description}</p>
+                                    {details.website && (
+                                        <a
+                                            href={details.website}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className={styles.websiteLink}
+                                        >
+                                            {details.website}
+                                        </a>
+                                    )}
+                                </div>
+                            )}
                         </>
                     )}
                 </div>

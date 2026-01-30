@@ -158,6 +158,52 @@
     font-size: 0.9375rem;
 }
 
+.sectorBadge {
+    font-size: 0.8125rem;
+    color: var(--color-text-muted);
+    margin-top: var(--space-xs);
+}
+
+.companyDescription {
+    font-size: 0.875rem;
+    line-height: 1.7;
+    color: var(--color-text-secondary);
+    margin: 0;
+}
+
+.websiteLink {
+    display: inline-block;
+    margin-top: var(--space-md);
+    color: var(--color-accent-primary);
+    font-size: 0.875rem;
+    text-decoration: none;
+}
+
+.websiteLink:hover {
+    text-decoration: underline;
+}
+
+.recBar {
+    display: flex;
+    height: 24px;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    margin-bottom: var(--space-md);
+}
+
+.recSegment {
+    height: 100%;
+    transition: width var(--transition-base);
+}
+
+.recLabels {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+    font-size: 0.8125rem;
+    font-weight: 500;
+}
+
 .loadingState {
     display: flex;
     align-items: center;

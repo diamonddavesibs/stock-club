@@ -170,6 +170,95 @@ export async function searchSymbols(query: string): Promise<SymbolSearchResult[]
     }
 }
 
+export interface StockDetails {
+    symbol: string;
+    longName?: string;
+    sector?: string;
+    industry?: string;
+    website?: string;
+    description?: string;
+    marketCap?: number;
+    trailingPE?: number;
+    forwardPE?: number;
+    eps?: number;
+    dividendYield?: number;
+    fiftyTwoWeekHigh?: number;
+    fiftyTwoWeekLow?: number;
+    volume?: number;
+    avgVolume?: number;
+    beta?: number;
+    recommendations?: {
+        strongBuy: number;
+        buy: number;
+        hold: number;
+        sell: number;
+        strongSell: number;
+    };
+}
+
+/**
+ * Fetch detailed stock info using Yahoo Finance quoteSummary
+ */
+export async function getStockDetails(symbol: string): Promise<StockDetails | null> {
+    try {
+        const modules = "summaryProfile,summaryDetail,defaultKeyStatistics,financialData,recommendationTrend";
+        const url = `https://query1.finance.yahoo.com/v10/finance/quoteSummary/${encodeURIComponent(symbol)}?modules=${modules}`;
+        const response = await fetch(url, {
+            headers: { "User-Agent": "Mozilla/5.0" },
+            next: { revalidate: 300 },
+        });
+
+        if (!response.ok) {
+            console.error(`Yahoo Finance details error for ${symbol}: ${response.status}`);
+            return null;
+        }
+
+        const data = await response.json();
+        const result = data?.quoteSummary?.result?.[0];
+        if (!result) return null;
+
+        const profile = result.summaryProfile ?? {};
+        const summary = result.summaryDetail ?? {};
+        const keyStats = result.defaultKeyStatistics ?? {};
+        const financial = result.financialData ?? {};
+        const recTrend = result.recommendationTrend?.trend?.[0];
+
+        const details: StockDetails = {
+            symbol,
+            longName: financial.longName ?? profile.longName,
+            sector: profile.sector,
+            industry: profile.industry,
+            website: profile.website,
+            description: profile.longBusinessSummary,
+            marketCap: summary.marketCap?.raw,
+            trailingPE: summary.trailingPE?.raw,
+            forwardPE: keyStats.forwardPE?.raw,
+            eps: keyStats.trailingEps?.raw,
+            dividendYield: summary.dividendYield?.raw,
+            fiftyTwoWeekHigh: summary.fiftyTwoWeekHigh?.raw,
+            fiftyTwoWeekLow: summary.fiftyTwoWeekLow?.raw,
+            volume: summary.volume?.raw,
+            avgVolume: summary.averageVolume?.raw,
+            beta: keyStats.beta?.raw,
+        };
+
+        if (recTrend) {
+            details.recommendations = {
+                strongBuy: recTrend.strongBuy ?? 0,
+                buy: recTrend.buy ?? 0,
+                hold: recTrend.hold ?? 0,
+                sell: recTrend.sell ?? 0,
+                strongSell: recTrend.strongSell ?? 0,
+            };
+        }
+
+        return details;
+    } catch (error) {
+        console.error(`Failed to fetch details for ${symbol}:`, error);
+        return null;
+    }
+}
+
 export interface StockCandle {
     date: string;   // ISO date string
     open: number;
