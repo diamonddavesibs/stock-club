@@ -190,6 +190,7 @@ export async function getStockCandles(symbol: string, range: string = "1M"): Pro
     let interval: string;
 
     switch (range) {
+        case "5D":  yahooRange = "5d";  interval = "1d"; break;
         case "1W":  yahooRange = "5d";  interval = "1d"; break;
         case "1M":  yahooRange = "1mo"; interval = "1d"; break;
         case "3M":  yahooRange = "3mo"; interval = "1d"; break;

@@ -24,7 +24,7 @@ interface CandlePoint {
     close: number;
 }
 
-const RANGES = ["1W", "1M", "3M", "6M", "1Y"] as const;
+const RANGES = ["5D", "1W", "1M", "3M", "6M", "1Y"] as const;
 
 export default function StockDetailPage() {
     const params = useParams();
