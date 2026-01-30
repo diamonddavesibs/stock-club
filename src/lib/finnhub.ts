@@ -182,9 +182,9 @@ export async function searchSymbols(query: string): Promise<SymbolSearchResult[]
             return [];
         }
 
-        // Filter to common stocks only and limit results
+        // Filter out non-equity types and limit results
         return data.result
-            .filter((r: any) => r.type === "Common Stock")
+            .filter((r: any) => !r.symbol.includes(".") && r.description)
             .slice(0, 10)
             .map((r: any) => ({
                 symbol: r.symbol,
