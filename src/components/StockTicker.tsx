@@ -51,10 +51,8 @@ export default function StockTicker({ holdings, livePrices = {} }: StockTickerPr
                     {tickerItems.map((holding, index) => {
                         const live = livePrices[holding.symbol];
                         const price = live?.currentPrice || holding.currentPrice;
-                        const totalCost = holding.quantity * holding.costPerShare;
-                        const totalValue = holding.quantity * price;
-                        const gainLoss = totalValue - totalCost;
-                        const gainLossPercent = totalCost > 0 ? (gainLoss / totalCost) * 100 : 0;
+                        const dailyChange = live?.change ?? 0;
+                        const dailyChangePercent = live?.changePercent ?? 0;
 
                         return (
                             <div key={`${holding.symbol}-${index}`} className={styles.tickerItem}>
@@ -64,10 +62,10 @@ export default function StockTicker({ holdings, livePrices = {} }: StockTickerPr
                                 </span>
                                 <span
                                     className={`${styles.tickerChange} ${
-                                        gainLossPercent >= 0 ? styles.positive : styles.negative
+                                        dailyChange >= 0 ? styles.positive : styles.negative
                                     }`}
                                 >
-                                    {formatPercent(gainLossPercent)}
+                                    {formatPercent(dailyChangePercent)}
                                 </span>
                             </div>
                         );

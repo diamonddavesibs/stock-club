@@ -1,16 +1,7 @@
 /**
- * Finnhub API client for fetching real-time stock prices
- * Free tier: 60 API calls/minute
- *
- * To get an API key:
- * 1. Go to https://finnhub.io/
- * 2. Sign up for a free account
- * 3. Copy your API key from the dashboard
- * 4. Add FINNHUB_API_KEY to your environment variables
+ * Stock data client using Yahoo Finance APIs
+ * No API key required
  */
-
-const FINNHUB_API_KEY = process.env.FINNHUB_API_KEY || "";
-const FINNHUB_BASE_URL = "https://finnhub.io/api/v1";
 
 export interface StockQuote {
     symbol: string;
@@ -24,30 +15,14 @@ export interface StockQuote {
     timestamp: number;
 }
 
-export interface FinnhubQuoteResponse {
-    c: number;  // Current price
-    d: number;  // Change
-    dp: number; // Percent change
-    h: number;  // High price of the day
-    l: number;  // Low price of the day
-    o: number;  // Open price of the day
-    pc: number; // Previous close price
-    t: number;  // Timestamp
-}
-
 // In-memory cache for stock prices (5-minute TTL)
 const priceCache = new Map<string, { data: StockQuote; timestamp: number }>();
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
 /**
- * Fetch a single stock quote from Finnhub
+ * Fetch a single stock quote using Yahoo Finance
  */
 export async function getStockQuote(symbol: string): Promise<StockQuote | null> {
-    if (!FINNHUB_API_KEY) {
-        console.warn("FINNHUB_API_KEY not set");
-        return null;
-    }
-
     // Check cache first
     const cached = priceCache.get(symbol);
     if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
@@ -55,39 +30,50 @@ export async function getStockQuote(symbol: string): Promise<StockQuote | null> 
     }
 
     try {
-        const response = await fetch(
-            `${FINNHUB_BASE_URL}/quote?symbol=${encodeURIComponent(symbol)}&token=${FINNHUB_API_KEY}`,
-            { next: { revalidate: 300 } } // Cache for 5 minutes
-        );
+        const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?range=1d&interval=1d`;
+        const response = await fetch(url, {
+            headers: { "User-Agent": "Mozilla/5.0" },
+            next: { revalidate: 300 },
+        });
 
         if (!response.ok) {
-            console.error(`Finnhub API error for ${symbol}: ${response.status}`);
+            console.error(`Yahoo Finance quote error for ${symbol}: ${response.status}`);
             return null;
         }
 
-        const data: FinnhubQuoteResponse = await response.json();
+        const data = await response.json();
+        const result = data?.chart?.result?.[0];
+        const meta = result?.meta;
 
-        // Check if we got valid data (c=0 usually means invalid symbol)
-        if (data.c === 0 && data.pc === 0) {
-            console.warn(`No data available for symbol: ${symbol}`);
+        if (!meta || !meta.regularMarketPrice) {
+            console.warn(`No quote data from Yahoo for ${symbol}`);
             return null;
         }
+
+        const currentPrice = meta.regularMarketPrice;
+        const previousClose = meta.chartPreviousClose ?? meta.previousClose ?? currentPrice;
+        const change = currentPrice - previousClose;
+        const changePercent = previousClose > 0 ? (change / previousClose) * 100 : 0;
+
+        // Get intraday high/low/open from the quote data if available
+        const quoteData = result?.indicators?.quote?.[0];
+        const high = quoteData?.high?.[0] ?? currentPrice;
+        const low = quoteData?.low?.[0] ?? currentPrice;
+        const open = quoteData?.open?.[0] ?? previousClose;
 
         const quote: StockQuote = {
             symbol,
-            currentPrice: data.c,
-            change: data.d,
-            changePercent: data.dp,
-            high: data.h,
-            low: data.l,
-            open: data.o,
-            previousClose: data.pc,
-            timestamp: data.t * 1000, // Convert to milliseconds
+            currentPrice,
+            change,
+            changePercent,
+            high,
+            low,
+            open,
+            previousClose,
+            timestamp: Date.now(),
         };
 
-        // Update cache
         priceCache.set(symbol, { data: quote, timestamp: Date.now() });
-
         return quote;
     } catch (error) {
         console.error(`Failed to fetch quote for ${symbol}:`, error);
@@ -96,42 +82,29 @@ export async function getStockQuote(symbol: string): Promise<StockQuote | null> 
 }
 
 /**
- * Fetch multiple stock quotes with rate limiting
- * Processes in batches to respect Finnhub's 60 calls/minute limit
+ * Fetch multiple stock quotes
  */
 export async function getMultipleQuotes(symbols: string[]): Promise<Map<string, StockQuote>> {
     const results = new Map<string, StockQuote>();
-
-    if (!FINNHUB_API_KEY) {
-        console.warn("FINNHUB_API_KEY not set");
-        return results;
-    }
-
-    // Remove duplicates
     const uniqueSymbols = [...new Set(symbols)];
 
-    // Process symbols with small delay to avoid rate limiting
-    // Finnhub allows 60 requests/minute, so ~1 request per second is safe
-    for (const symbol of uniqueSymbols) {
+    // Fetch all quotes concurrently
+    const promises = uniqueSymbols.map(async (symbol) => {
         const quote = await getStockQuote(symbol);
         if (quote) {
             results.set(symbol, quote);
         }
+    });
 
-        // Small delay between requests (100ms = 600 requests/minute max, well under limit)
-        if (uniqueSymbols.indexOf(symbol) < uniqueSymbols.length - 1) {
-            await new Promise(resolve => setTimeout(resolve, 100));
-        }
-    }
-
+    await Promise.all(promises);
     return results;
 }
 
 /**
- * Check if Finnhub API is configured
+ * Check if stock data API is available (always true for Yahoo Finance)
  */
 export function isFinnhubConfigured(): boolean {
-    return !!FINNHUB_API_KEY;
+    return true;
 }
 
 /**
