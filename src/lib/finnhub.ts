@@ -239,34 +239,39 @@ export async function getStockCandles(symbol: string, range: string = "1M"): Pro
         default:    from = now - 30 * 24 * 60 * 60; break;
     }
 
-    try {
-        const response = await fetch(
-            `${FINNHUB_BASE_URL}/stock/candle?symbol=${encodeURIComponent(symbol)}&resolution=D&from=${from}&to=${now}&token=${FINNHUB_API_KEY}`,
-            { next: { revalidate: 300 } }
-        );
+    // Try daily resolution first, fall back to weekly if no data
+    const resolutions = ["D", "W"];
 
-        if (!response.ok) {
-            console.error(`Finnhub candle API error for ${symbol}: ${response.status}`);
-            return [];
+    for (const resolution of resolutions) {
+        try {
+            const url = `${FINNHUB_BASE_URL}/stock/candle?symbol=${encodeURIComponent(symbol)}&resolution=${resolution}&from=${from}&to=${now}&token=${FINNHUB_API_KEY}`;
+            const response = await fetch(url, { next: { revalidate: 300 } });
+
+            if (!response.ok) {
+                console.error(`Finnhub candle API error for ${symbol} (res=${resolution}): ${response.status}`);
+                continue;
+            }
+
+            const data: FinnhubCandleResponse = await response.json();
+
+            if (data.s !== "ok" || !data.c || data.c.length === 0) {
+                console.warn(`No candle data for ${symbol} with resolution ${resolution}`);
+                continue;
+            }
+
+            return data.t.map((timestamp, i) => ({
+                date: new Date(timestamp * 1000).toISOString().split("T")[0],
+                open: data.o[i],
+                high: data.h[i],
+                low: data.l[i],
+                close: data.c[i],
+                volume: data.v[i],
+            }));
+        } catch (error) {
+            console.error(`Failed to fetch candles for ${symbol} (res=${resolution}):`, error);
+            continue;
         }
-
-        const data: FinnhubCandleResponse = await response.json();
-
-        if (data.s !== "ok" || !data.c || data.c.length === 0) {
-            console.warn(`No candle data for ${symbol}`);
-            return [];
-        }
-
-        return data.t.map((timestamp, i) => ({
-            date: new Date(timestamp * 1000).toISOString().split("T")[0],
-            open: data.o[i],
-            high: data.h[i],
-            low: data.l[i],
-            close: data.c[i],
-            volume: data.v[i],
-        }));
-    } catch (error) {
-        console.error(`Failed to fetch candles for ${symbol}:`, error);
-        return [];
     }
+
+    return [];
 }
