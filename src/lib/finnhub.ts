@@ -206,72 +206,60 @@ export interface StockCandle {
     volume: number;
 }
 
-interface FinnhubCandleResponse {
-    c: number[];  // Close prices
-    h: number[];  // High prices
-    l: number[];  // Low prices
-    o: number[];  // Open prices
-    t: number[];  // Timestamps (Unix)
-    v: number[];  // Volume
-    s: string;    // Status: "ok" or "no_data"
-}
-
 /**
- * Fetch historical candle data from Finnhub
+ * Fetch historical candle data using Yahoo Finance chart API
  * @param symbol Stock symbol
  * @param range Time range: "1W", "1M", "3M", "6M", "1Y"
  */
 export async function getStockCandles(symbol: string, range: string = "1M"): Promise<StockCandle[]> {
-    if (!FINNHUB_API_KEY) {
-        console.warn("FINNHUB_API_KEY not set");
-        return [];
-    }
-
-    const now = Math.floor(Date.now() / 1000);
-    let from: number;
+    // Map our range values to Yahoo Finance parameters
+    let yahooRange: string;
+    let interval: string;
 
     switch (range) {
-        case "1W":  from = now - 7 * 24 * 60 * 60; break;
-        case "1M":  from = now - 30 * 24 * 60 * 60; break;
-        case "3M":  from = now - 90 * 24 * 60 * 60; break;
-        case "6M":  from = now - 180 * 24 * 60 * 60; break;
-        case "1Y":  from = now - 365 * 24 * 60 * 60; break;
-        default:    from = now - 30 * 24 * 60 * 60; break;
+        case "1W":  yahooRange = "5d";  interval = "1d"; break;
+        case "1M":  yahooRange = "1mo"; interval = "1d"; break;
+        case "3M":  yahooRange = "3mo"; interval = "1d"; break;
+        case "6M":  yahooRange = "6mo"; interval = "1wk"; break;
+        case "1Y":  yahooRange = "1y";  interval = "1wk"; break;
+        default:    yahooRange = "1mo"; interval = "1d"; break;
     }
 
-    // Try daily resolution first, fall back to weekly if no data
-    const resolutions = ["D", "W"];
+    try {
+        const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?range=${yahooRange}&interval=${interval}`;
+        const response = await fetch(url, {
+            headers: { "User-Agent": "Mozilla/5.0" },
+            next: { revalidate: 300 },
+        });
 
-    for (const resolution of resolutions) {
-        try {
-            const url = `${FINNHUB_BASE_URL}/stock/candle?symbol=${encodeURIComponent(symbol)}&resolution=${resolution}&from=${from}&to=${now}&token=${FINNHUB_API_KEY}`;
-            const response = await fetch(url, { next: { revalidate: 300 } });
-
-            if (!response.ok) {
-                console.error(`Finnhub candle API error for ${symbol} (res=${resolution}): ${response.status}`);
-                continue;
-            }
-
-            const data: FinnhubCandleResponse = await response.json();
-
-            if (data.s !== "ok" || !data.c || data.c.length === 0) {
-                console.warn(`No candle data for ${symbol} with resolution ${resolution}`);
-                continue;
-            }
-
-            return data.t.map((timestamp, i) => ({
-                date: new Date(timestamp * 1000).toISOString().split("T")[0],
-                open: data.o[i],
-                high: data.h[i],
-                low: data.l[i],
-                close: data.c[i],
-                volume: data.v[i],
-            }));
-        } catch (error) {
-            console.error(`Failed to fetch candles for ${symbol} (res=${resolution}):`, error);
-            continue;
+        if (!response.ok) {
+            console.error(`Yahoo Finance chart error for ${symbol}: ${response.status}`);
+            return [];
         }
-    }
 
-    return [];
+        const data = await response.json();
+        const result = data?.chart?.result?.[0];
+
+        if (!result?.timestamp || !result?.indicators?.quote?.[0]) {
+            console.warn(`No chart data from Yahoo for ${symbol}`);
+            return [];
+        }
+
+        const timestamps: number[] = result.timestamp;
+        const quote = result.indicators.quote[0];
+
+        return timestamps
+            .map((ts: number, i: number) => ({
+                date: new Date(ts * 1000).toISOString().split("T")[0],
+                open: quote.open?.[i] ?? 0,
+                high: quote.high?.[i] ?? 0,
+                low: quote.low?.[i] ?? 0,
+                close: quote.close?.[i] ?? 0,
+                volume: quote.volume?.[i] ?? 0,
+            }))
+            .filter((c: StockCandle) => c.close > 0);
+    } catch (error) {
+        console.error(`Failed to fetch chart data for ${symbol}:`, error);
+        return [];
+    }
 }
