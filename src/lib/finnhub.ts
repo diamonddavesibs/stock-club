@@ -151,6 +151,52 @@ export function getCacheStats(): { size: number; symbols: string[] } {
     };
 }
 
+export interface SymbolSearchResult {
+    symbol: string;
+    description: string;
+    type: string;
+}
+
+/**
+ * Search for stock symbols by query string
+ */
+export async function searchSymbols(query: string): Promise<SymbolSearchResult[]> {
+    if (!FINNHUB_API_KEY || !query.trim()) {
+        return [];
+    }
+
+    try {
+        const response = await fetch(
+            `${FINNHUB_BASE_URL}/search?q=${encodeURIComponent(query)}&token=${FINNHUB_API_KEY}`,
+            { next: { revalidate: 300 } }
+        );
+
+        if (!response.ok) {
+            console.error(`Finnhub search error: ${response.status}`);
+            return [];
+        }
+
+        const data = await response.json();
+
+        if (!data.result || data.result.length === 0) {
+            return [];
+        }
+
+        // Filter to common stocks only and limit results
+        return data.result
+            .filter((r: any) => r.type === "Common Stock")
+            .slice(0, 10)
+            .map((r: any) => ({
+                symbol: r.symbol,
+                description: r.description,
+                type: r.type,
+            }));
+    } catch (error) {
+        console.error("Failed to search symbols:", error);
+        return [];
+    }
+}
+
 export interface StockCandle {
     date: string;   // ISO date string
     open: number;

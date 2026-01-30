@@ -8,6 +8,7 @@ import { PortfolioData, Holding } from "@/lib/types";
 import PortfolioPerformanceChart from "@/components/charts/PortfolioPerformanceChart";
 import PortfolioAllocationChart from "@/components/charts/PortfolioAllocationChart";
 import StockTicker from "@/components/StockTicker";
+import StockSearch from "@/components/StockSearch";
 
 // Sample data - used when no Schwab data is uploaded
 const sampleStats = [
@@ -331,6 +332,7 @@ export default function DashboardPage() {
                     <div className={styles.headerContent}>
                         <h1 className={styles.pageTitle}>Dashboard</h1>
                         <div className={styles.headerActions}>
+                            <StockSearch />
                             {hasRealData ? (
                                 <span style={{ color: 'var(--color-success)', fontSize: '0.875rem' }}>
                                     ✓ Using Schwab data
