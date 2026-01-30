@@ -158,38 +158,38 @@ export interface SymbolSearchResult {
 }
 
 /**
- * Search for stock symbols by query string
+ * Search for stock symbols using Yahoo Finance autosuggest
  */
 export async function searchSymbols(query: string): Promise<SymbolSearchResult[]> {
-    if (!FINNHUB_API_KEY || !query.trim()) {
+    if (!query.trim()) {
         return [];
     }
 
     try {
-        const response = await fetch(
-            `${FINNHUB_BASE_URL}/search?q=${encodeURIComponent(query)}&token=${FINNHUB_API_KEY}`,
-            { next: { revalidate: 300 } }
-        );
+        const url = `https://query1.finance.yahoo.com/v1/finance/search?q=${encodeURIComponent(query)}&quotesCount=10&newsCount=0&listsCount=0`;
+        const response = await fetch(url, {
+            headers: { "User-Agent": "Mozilla/5.0" },
+            next: { revalidate: 300 },
+        });
 
         if (!response.ok) {
-            console.error(`Finnhub search error: ${response.status}`);
+            console.error(`Yahoo Finance search error: ${response.status}`);
             return [];
         }
 
         const data = await response.json();
 
-        if (!data.result || data.result.length === 0) {
+        if (!data.quotes || data.quotes.length === 0) {
             return [];
         }
 
-        // Filter out non-equity types and limit results
-        return data.result
-            .filter((r: any) => !r.symbol.includes(".") && r.description)
+        return data.quotes
+            .filter((q: any) => q.quoteType === "EQUITY" && q.symbol && q.shortname)
             .slice(0, 10)
-            .map((r: any) => ({
-                symbol: r.symbol,
-                description: r.description,
-                type: r.type,
+            .map((q: any) => ({
+                symbol: q.symbol,
+                description: q.shortname || q.longname || q.symbol,
+                type: q.quoteType,
             }));
     } catch (error) {
         console.error("Failed to search symbols:", error);
