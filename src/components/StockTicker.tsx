@@ -51,9 +51,10 @@ export default function StockTicker({ holdings, livePrices = {} }: StockTickerPr
                     {tickerItems.map((holding, index) => {
                         const live = livePrices[holding.symbol];
                         const price = live?.currentPrice || holding.currentPrice;
-                        const change = live?.change ?? 0;
-                        const changePercent = live?.changePercent ?? 0;
-                        const hasLive = !!live;
+                        const totalCost = holding.quantity * holding.costPerShare;
+                        const totalValue = holding.quantity * price;
+                        const gainLoss = totalValue - totalCost;
+                        const gainLossPercent = totalCost > 0 ? (gainLoss / totalCost) * 100 : 0;
 
                         return (
                             <div key={`${holding.symbol}-${index}`} className={styles.tickerItem}>
@@ -61,23 +62,13 @@ export default function StockTicker({ holdings, livePrices = {} }: StockTickerPr
                                 <span className={styles.tickerPrice}>
                                     {formatPrice(price)}
                                 </span>
-                                {hasLive ? (
-                                    <span
-                                        className={`${styles.tickerChange} ${
-                                            change >= 0 ? styles.positive : styles.negative
-                                        }`}
-                                    >
-                                        {formatChange(change)} ({formatPercent(changePercent)})
-                                    </span>
-                                ) : (
-                                    <span
-                                        className={`${styles.tickerChange} ${
-                                            holding.gainLossPercent >= 0 ? styles.positive : styles.negative
-                                        }`}
-                                    >
-                                        {formatPercent(holding.gainLossPercent)}
-                                    </span>
-                                )}
+                                <span
+                                    className={`${styles.tickerChange} ${
+                                        gainLossPercent >= 0 ? styles.positive : styles.negative
+                                    }`}
+                                >
+                                    {formatPercent(gainLossPercent)}
+                                </span>
                             </div>
                         );
                     })}
