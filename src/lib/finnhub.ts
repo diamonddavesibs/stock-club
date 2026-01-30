@@ -220,8 +220,8 @@ export async function getStockCandles(symbol: string, range: string = "1M"): Pro
         case "1W":  yahooRange = "5d";  interval = "1d"; break;
         case "1M":  yahooRange = "1mo"; interval = "1d"; break;
         case "3M":  yahooRange = "3mo"; interval = "1d"; break;
-        case "6M":  yahooRange = "6mo"; interval = "1wk"; break;
-        case "1Y":  yahooRange = "1y";  interval = "1wk"; break;
+        case "6M":  yahooRange = "6mo"; interval = "1d"; break;
+        case "1Y":  yahooRange = "1y";  interval = "1d"; break;
         default:    yahooRange = "1mo"; interval = "1d"; break;
     }
 
