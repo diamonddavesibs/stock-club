@@ -27,6 +27,7 @@ export default function StockSearch() {
     const [searching, setSearching] = useState(false);
     const [preview, setPreview] = useState<QuotePreview | null>(null);
     const [previewLoading, setPreviewLoading] = useState(false);
+    const [previewError, setPreviewError] = useState<string | null>(null);
     const [showDropdown, setShowDropdown] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
     const debounceRef = useRef<NodeJS.Timeout>(null);
@@ -89,6 +90,7 @@ export default function StockSearch() {
         setShowDropdown(false);
         setPreviewLoading(true);
         setPreview(null);
+        setPreviewError(null);
 
         try {
             const res = await fetch("/api/stock-prices", {
@@ -97,25 +99,30 @@ export default function StockSearch() {
                 body: JSON.stringify({ symbols: [result.symbol] }),
             });
 
-            if (res.ok) {
-                const data = await res.json();
-                const quote = data.quotes?.[result.symbol];
-                if (quote) {
-                    setPreview({
-                        symbol: result.symbol,
-                        description: result.description,
-                        currentPrice: quote.currentPrice,
-                        change: quote.change,
-                        changePercent: quote.changePercent,
-                        high: quote.high,
-                        low: quote.low,
-                        open: quote.open,
-                        previousClose: quote.previousClose,
-                    });
-                }
+            if (!res.ok) {
+                setPreviewError("Failed to fetch quote");
+                return;
+            }
+
+            const data = await res.json();
+            const quote = data.quotes?.[result.symbol];
+            if (quote) {
+                setPreview({
+                    symbol: result.symbol,
+                    description: result.description,
+                    currentPrice: quote.currentPrice,
+                    change: quote.change,
+                    changePercent: quote.changePercent,
+                    high: quote.high,
+                    low: quote.low,
+                    open: quote.open,
+                    previousClose: quote.previousClose,
+                });
+            } else {
+                setPreviewError("No quote data available");
             }
         } catch {
-            // ignore
+            setPreviewError("Network error");
         } finally {
             setPreviewLoading(false);
         }
@@ -158,10 +165,12 @@ export default function StockSearch() {
             )}
 
             {/* Preview card */}
-            {(preview || previewLoading) && (
+            {(preview || previewLoading || previewError) && (
                 <div className={styles.previewCard}>
                     {previewLoading ? (
                         <div className={styles.previewLoading}>Loading quote...</div>
+                    ) : previewError ? (
+                        <div className={styles.previewLoading}>{previewError}</div>
                     ) : preview && (
                         <>
                             <div className={styles.previewHeader}>
