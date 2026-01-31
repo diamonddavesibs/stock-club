@@ -158,6 +158,37 @@
     font-size: 0.9375rem;
 }
 
+.researchLinks {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-xl);
+    flex-wrap: wrap;
+}
+
+.researchLabel {
+    font-size: 0.8125rem;
+    color: var(--color-text-muted);
+    font-weight: 500;
+}
+
+.researchBtn {
+    padding: var(--space-xs) var(--space-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-bg-card);
+    color: var(--color-accent-primary);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all var(--transition-fast);
+}
+
+.researchBtn:hover {
+    border-color: var(--color-accent-primary);
+    background: rgba(59, 130, 246, 0.1);
+}
+
 .sectorBadge {
     font-size: 0.8125rem;
     color: var(--color-text-muted);

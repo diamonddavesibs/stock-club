@@ -280,6 +280,43 @@ export default function StockDetailPage() {
                                 </div>
                             </div>
 
+                            {/* External Research Links */}
+                            <div className={styles.researchLinks}>
+                                <span className={styles.researchLabel}>Research:</span>
+                                <a
+                                    href={`https://finance.yahoo.com/quote/${symbol}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className={styles.researchBtn}
+                                >
+                                    Yahoo Finance
+                                </a>
+                                <a
+                                    href={`https://www.morningstar.com/stocks/xnas/${symbol.toLowerCase()}/quote`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className={styles.researchBtn}
+                                >
+                                    Morningstar
+                                </a>
+                                <a
+                                    href={`https://seekingalpha.com/symbol/${symbol}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className={styles.researchBtn}
+                                >
+                                    Seeking Alpha
+                                </a>
+                                <a
+                                    href={`https://www.google.com/finance/quote/${symbol}:NASDAQ`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className={styles.researchBtn}
+                                >
+                                    Google Finance
+                                </a>
+                            </div>
+
                             {/* Chart */}
                             <div className={styles.chartCard}>
                                 <div className={styles.chartHeader}>
