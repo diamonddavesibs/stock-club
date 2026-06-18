@@ -302,6 +302,10 @@ export default function DashboardPage() {
                         <span className={styles.navIcon}>📋</span>
                         Transactions
                     </Link>
+                    <Link href="/dfdii-holdings" className={styles.navItem}>
+                        <span className={styles.navIcon}>📈</span>
+                        DFDII Holdings
+                    </Link>
                     {user?.role === "ADMIN" && (
                         <Link href="/members" className={styles.navItem}>
                             <span className={styles.navIcon}>👥</span>
@@ -469,7 +473,7 @@ export default function DashboardPage() {
                         </table>
                         {holdings.length > 0 && (
                             <p style={{ textAlign: 'center', color: 'var(--color-text-muted)', marginTop: 'var(--space-md)', fontSize: '0.875rem' }}>
-                                <Link href="/portfolio" style={{ color: 'var(--color-accent-primary)' }}>
+                                <Link href="/portfolio" style={{ color: 'var(--color-accent-primary' }}>
                                     View detailed portfolio →
                                 </Link>
                             </p>

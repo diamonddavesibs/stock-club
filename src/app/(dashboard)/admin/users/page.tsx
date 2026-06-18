@@ -170,6 +170,10 @@ export default function AdminUsersPage() {
                         <span className={styles.navIcon}>📋</span>
                         Transactions
                     </Link>
+                    <Link href="/dfdii-holdings" className={styles.navItem}>
+                        <span className={styles.navIcon}>📈</span>
+                        DFDII Holdings
+                    </Link>
                     <Link href="/members" className={styles.navItem}>
                         <span className={styles.navIcon}>👥</span>
                         Members

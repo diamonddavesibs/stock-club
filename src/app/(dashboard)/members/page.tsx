@@ -157,6 +157,10 @@ export default function MembersPage() {
                         <span className={dashStyles.navIcon}>📋</span>
                         Transactions
                     </Link>
+                    <Link href="/dfdii-holdings" className={dashStyles.navItem}>
+                        <span className={dashStyles.navIcon}>📈</span>
+                        DFDII Holdings
+                    </Link>
                     <Link href="/members" className={`${dashStyles.navItem} ${dashStyles.navItemActive}`}>
                         <span className={dashStyles.navIcon}>👥</span>
                         Members

@@ -178,6 +178,10 @@ export default function TransactionsPage() {
                         <span className={dashStyles.navIcon}>📋</span>
                         Transactions
                     </Link>
+                    <Link href="/dfdii-holdings" className={dashStyles.navItem}>
+                        <span className={dashStyles.navIcon}>📈</span>
+                        DFDII Holdings
+                    </Link>
                     {user?.role === "ADMIN" && (
                         <Link href="/members" className={dashStyles.navItem}>
                             <span className={dashStyles.navIcon}>👥</span>
