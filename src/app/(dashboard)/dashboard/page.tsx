@@ -62,7 +62,7 @@ export default function DashboardPage() {
         const fetchLivePrices = async () => {
             const holdingsToPrice = hasRealData && portfolioData
                 ? portfolioData.holdings
-                : sampleHoldings;
+                : dfdiiHoldingsAsPortfolio;
 
             if (holdingsToPrice.length === 0) return;
 
