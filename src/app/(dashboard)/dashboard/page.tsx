@@ -60,9 +60,7 @@ export default function DashboardPage() {
     // Fetch live prices when holdings are available
     useEffect(() => {
         const fetchLivePrices = async () => {
-            const holdingsToPrice = hasRealData && portfolioData
-                ? portfolioData.holdings
-                : dfdiiHoldingsAsPortfolio;
+            const holdingsToPrice = dfdiiHoldingsAsPortfolio;
 
             if (holdingsToPrice.length === 0) return;
 
@@ -131,8 +129,8 @@ export default function DashboardPage() {
         return `${value >= 0 ? "+" : ""}${value.toFixed(1)}%`;
     };
 
-    // Determine which data to display, merging live prices when available
-    const baseHoldings = hasRealData && portfolioData ? portfolioData.holdings : dfdiiHoldingsAsPortfolio;
+    // Always use DFDII holdings as the base
+    const baseHoldings = dfdiiHoldingsAsPortfolio;
 
     // Update holdings with live prices
     const holdings = useMemo(() => {
@@ -197,9 +195,7 @@ export default function DashboardPage() {
 
     const hasLivePrices = Object.keys(livePrices).length > 0;
 
-    const totalDividends = !hasRealData
-        ? dfdiiStaticHoldings.reduce((sum, h) => sum + h.dividends, 0)
-        : 0;
+    const totalDividends = dfdiiStaticHoldings.reduce((sum, h) => sum + h.dividends, 0);
 
     const totalReturn = totalGainLoss + totalDividends;
     const totalCostForReturn = holdings.reduce((sum, h) => sum + (h.costPerShare * h.quantity), 0);
