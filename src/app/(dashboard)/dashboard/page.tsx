@@ -9,22 +9,7 @@ import PortfolioPerformanceChart from "@/components/charts/PortfolioPerformanceC
 import PortfolioAllocationChart from "@/components/charts/PortfolioAllocationChart";
 import StockTicker from "@/components/StockTicker";
 import StockSearch from "@/components/StockSearch";
-
-// Sample data - used when no Schwab data is uploaded
-const sampleStats = [
-    { label: "Portfolio Value", value: "$124,850", change: "+12.4%", positive: true, icon: "💰" },
-    { label: "Today's Change", value: "+$1,247", change: "+1.01%", positive: true, icon: "📈" },
-    { label: "Total Gain/Loss", value: "+$18,420", change: "+17.3%", positive: true, icon: "🎯" },
-    { label: "Cash Balance", value: "$4,230", change: "3.4% of portfolio", positive: true, icon: "💵" },
-];
-
-const sampleHoldings: Holding[] = [
-    { symbol: "AAPL", name: "Apple Inc.", quantity: 50, costPerShare: 145.20, currentPrice: 178.50, marketValue: 8925, gainLoss: 1665, gainLossPercent: 22.9 },
-    { symbol: "MSFT", name: "Microsoft Corp.", quantity: 30, costPerShare: 280.00, currentPrice: 378.91, marketValue: 11367.3, gainLoss: 2967.3, gainLossPercent: 35.3 },
-    { symbol: "GOOGL", name: "Alphabet Inc.", quantity: 15, costPerShare: 120.50, currentPrice: 141.80, marketValue: 2127, gainLoss: 319.5, gainLossPercent: 17.7 },
-    { symbol: "NVDA", name: "NVIDIA Corp.", quantity: 20, costPerShare: 450.00, currentPrice: 875.28, marketValue: 17505.6, gainLoss: 8505.6, gainLossPercent: 94.5 },
-    { symbol: "AMZN", name: "Amazon.com Inc.", quantity: 25, costPerShare: 145.00, currentPrice: 178.25, marketValue: 4456.25, gainLoss: 831.25, gainLossPercent: 22.9 },
-];
+import { dfdiiHoldingsAsPortfolio } from "@/lib/dfdii-data";
 
 // Type for live stock prices
 interface LivePrice {
@@ -147,7 +132,7 @@ export default function DashboardPage() {
     };
 
     // Determine which data to display, merging live prices when available
-    const baseHoldings = hasRealData && portfolioData ? portfolioData.holdings : sampleHoldings;
+    const baseHoldings = hasRealData && portfolioData ? portfolioData.holdings : dfdiiHoldingsAsPortfolio;
 
     // Update holdings with live prices
     const holdings = useMemo(() => {
@@ -212,14 +197,12 @@ export default function DashboardPage() {
 
     const hasLivePrices = Object.keys(livePrices).length > 0;
 
-    const stats = hasRealData || hasLivePrices
-        ? [
-            { label: "Portfolio Value", value: formatCurrency(totalPortfolioValue), change: formatPercent(totalGainLossPercent), positive: totalGainLossPercent >= 0, icon: "💰" },
-            { label: "Today's Change", value: hasLivePrices ? formatCurrency(todaysChange.value) : "--", change: hasLivePrices ? formatPercent(todaysChange.percent) : (pricesLoading ? "Loading..." : "No live data"), positive: todaysChange.value >= 0, icon: "📈" },
-            { label: "Total Gain/Loss", value: formatCurrency(totalGainLoss), change: formatPercent(totalGainLossPercent), positive: totalGainLoss >= 0, icon: "🎯" },
-            { label: "Holdings", value: String(holdings.length), change: hasLivePrices ? `Updated ${lastPriceUpdate?.toLocaleTimeString() || ''}` : "positions", positive: true, icon: "📊" },
-        ]
-        : sampleStats;
+    const stats = [
+        { label: "Portfolio Value", value: formatCurrency(totalPortfolioValue), change: formatPercent(totalGainLossPercent), positive: totalGainLossPercent >= 0, icon: "💰" },
+        { label: "Today's Change", value: hasLivePrices ? formatCurrency(todaysChange.value) : "--", change: hasLivePrices ? formatPercent(todaysChange.percent) : (pricesLoading ? "Loading..." : "--"), positive: todaysChange.value >= 0, icon: "📈" },
+        { label: "Total Gain/Loss", value: formatCurrency(totalGainLoss), change: formatPercent(totalGainLossPercent), positive: totalGainLoss >= 0, icon: "🎯" },
+        { label: "Holdings", value: String(holdings.length), change: hasLivePrices ? `Updated ${lastPriceUpdate?.toLocaleTimeString() || ''}` : "positions", positive: true, icon: "📊" },
+    ];
 
     // Generate performance chart data
     const performanceData = useMemo(() => {
@@ -294,14 +277,6 @@ export default function DashboardPage() {
                         <span className={styles.navIcon}>📊</span>
                         Dashboard
                     </Link>
-                    <Link href="/portfolio" className={styles.navItem}>
-                        <span className={styles.navIcon}>💼</span>
-                        Portfolio
-                    </Link>
-                    <Link href="/transactions" className={styles.navItem}>
-                        <span className={styles.navIcon}>📋</span>
-                        Transactions
-                    </Link>
                     <Link href="/dfdii-holdings" className={styles.navItem}>
                         <span className={styles.navIcon}>📈</span>
                         DFDII Holdings
@@ -366,7 +341,7 @@ export default function DashboardPage() {
                 <StockTicker holdings={holdings} livePrices={livePrices} />
 
                 <div className={styles.pageContent}>
-                    {/* Sample Data Notice */}
+                    {/* DFDII Holdings Notice */}
                     {!hasRealData && (
                         <div style={{
                             padding: 'var(--space-md)',
@@ -379,10 +354,10 @@ export default function DashboardPage() {
                             justifyContent: 'space-between',
                         }}>
                             <span style={{ color: 'var(--color-text-secondary)', fontSize: '0.875rem' }}>
-                                📊 Showing sample data. <strong>Import your Schwab portfolio</strong> to see real holdings.
+                                📈 Showing <strong>DFDII Holdings</strong> — live prices update automatically.
                             </span>
-                            <Link href="/settings" className="btn btn-primary" style={{ padding: 'var(--space-sm) var(--space-md)', fontSize: '0.875rem' }}>
-                                Import Data
+                            <Link href="/dfdii-holdings" style={{ color: 'var(--color-accent-primary)', fontSize: '0.875rem' }}>
+                                View Full Holdings →
                             </Link>
                         </div>
                     )}
@@ -432,9 +407,9 @@ export default function DashboardPage() {
                     <div className={styles.holdingsSection}>
                         <div className={styles.sectionHeader}>
                             <h2 className={styles.sectionTitle}>
-                                {hasRealData ? "Your Holdings" : "Sample Holdings"}
+                                {hasRealData ? "Your Holdings" : "DFDII Holdings"}
                             </h2>
-                            <Link href="/portfolio" style={{ color: 'var(--color-accent-primary)', fontSize: '0.875rem' }}>
+                            <Link href="/dfdii-holdings" style={{ color: 'var(--color-accent-primary)', fontSize: '0.875rem' }}>
                                 View All →
                             </Link>
                         </div>

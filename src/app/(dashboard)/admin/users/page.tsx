@@ -162,14 +162,6 @@ export default function AdminUsersPage() {
                         <span className={styles.navIcon}>📊</span>
                         Dashboard
                     </Link>
-                    <Link href="/portfolio" className={styles.navItem}>
-                        <span className={styles.navIcon}>💼</span>
-                        Portfolio
-                    </Link>
-                    <Link href="/transactions" className={styles.navItem}>
-                        <span className={styles.navIcon}>📋</span>
-                        Transactions
-                    </Link>
                     <Link href="/dfdii-holdings" className={styles.navItem}>
                         <span className={styles.navIcon}>📈</span>
                         DFDII Holdings

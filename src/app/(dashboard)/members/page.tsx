@@ -149,14 +149,6 @@ export default function MembersPage() {
                         <span className={dashStyles.navIcon}>📊</span>
                         Dashboard
                     </Link>
-                    <Link href="/portfolio" className={dashStyles.navItem}>
-                        <span className={dashStyles.navIcon}>💼</span>
-                        Portfolio
-                    </Link>
-                    <Link href="/transactions" className={dashStyles.navItem}>
-                        <span className={dashStyles.navIcon}>📋</span>
-                        Transactions
-                    </Link>
                     <Link href="/dfdii-holdings" className={dashStyles.navItem}>
                         <span className={dashStyles.navIcon}>📈</span>
                         DFDII Holdings
