@@ -9,7 +9,7 @@ import PortfolioPerformanceChart from "@/components/charts/PortfolioPerformanceC
 import PortfolioAllocationChart from "@/components/charts/PortfolioAllocationChart";
 import StockTicker from "@/components/StockTicker";
 import StockSearch from "@/components/StockSearch";
-import { dfdiiHoldingsAsPortfolio } from "@/lib/dfdii-data";
+import { dfdiiHoldingsAsPortfolio, staticHoldings as dfdiiStaticHoldings } from "@/lib/dfdii-data";
 
 // Type for live stock prices
 interface LivePrice {
@@ -197,11 +197,19 @@ export default function DashboardPage() {
 
     const hasLivePrices = Object.keys(livePrices).length > 0;
 
+    const totalDividends = !hasRealData
+        ? dfdiiStaticHoldings.reduce((sum, h) => sum + h.dividends, 0)
+        : 0;
+
+    const totalReturn = totalGainLoss + totalDividends;
+    const totalCostForReturn = holdings.reduce((sum, h) => sum + (h.costPerShare * h.quantity), 0);
+    const totalReturnPercent = totalCostForReturn > 0 ? (totalReturn / totalCostForReturn) * 100 : 0;
+
     const stats = [
         { label: "Portfolio Value", value: formatCurrency(totalPortfolioValue), change: formatPercent(totalGainLossPercent), positive: totalGainLossPercent >= 0, icon: "💰" },
         { label: "Today's Change", value: hasLivePrices ? formatCurrency(todaysChange.value) : "--", change: hasLivePrices ? formatPercent(todaysChange.percent) : (pricesLoading ? "Loading..." : "--"), positive: todaysChange.value >= 0, icon: "📈" },
-        { label: "Total Gain/Loss", value: formatCurrency(totalGainLoss), change: formatPercent(totalGainLossPercent), positive: totalGainLoss >= 0, icon: "🎯" },
-        { label: "Holdings", value: String(holdings.length), change: hasLivePrices ? `Updated ${lastPriceUpdate?.toLocaleTimeString() || ''}` : "positions", positive: true, icon: "📊" },
+        { label: "Total Return", value: formatCurrency(totalReturn), change: formatPercent(totalReturnPercent), positive: totalReturn >= 0, icon: "🎯" },
+        { label: "Dividends Received", value: formatCurrency(totalDividends), change: `${holdings.length} holdings`, positive: true, icon: "💵" },
     ];
 
     // Generate performance chart data
@@ -241,8 +249,7 @@ export default function DashboardPage() {
                 value: holding.marketValue,
                 percentage: (holding.marketValue / totalValue) * 100,
             }))
-            .sort((a, b) => b.value - a.value)
-            .slice(0, 10); // Top 10 holdings for cleaner chart
+            .sort((a, b) => b.value - a.value);
     }, [holdings]);
 
     if (isLoading) {
@@ -395,7 +402,7 @@ export default function DashboardPage() {
                         <div className={styles.chartCard}>
                             <div className={styles.chartHeader}>
                                 <h2 className={styles.chartTitle}>Portfolio Allocation</h2>
-                                <span className={styles.chartSubtitle}>Top 10 holdings</span>
+                                <span className={styles.chartSubtitle}>All holdings by market value</span>
                             </div>
                             <div className={styles.chartContainer}>
                                 <PortfolioAllocationChart data={allocationData} height={300} />
