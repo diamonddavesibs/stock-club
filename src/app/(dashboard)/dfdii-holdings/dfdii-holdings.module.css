@@ -1,0 +1,205 @@
+/* Summary Cards */
+.summaryGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: var(--space-md);
+    margin-bottom: var(--space-lg);
+}
+
+.summaryCard {
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-lg);
+}
+
+.summaryLabel {
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+    margin-bottom: var(--space-xs);
+}
+
+.summaryValue {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-xs);
+}
+
+.summaryChange {
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+    .summaryChange.positive {
+        color: var(--color-success);
+    }
+
+    .summaryChange.negative {
+        color: var(--color-danger);
+    }
+
+/* Controls */
+.controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-md);
+    margin-bottom: var(--space-lg);
+}
+
+.searchInput {
+    flex: 1;
+    max-width: 400px;
+    padding: var(--space-sm) var(--space-md);
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    color: var(--color-text-primary);
+    font-size: 0.9375rem;
+    transition: border-color 0.2s;
+}
+
+    .searchInput:focus {
+        outline: none;
+        border-color: var(--color-primary);
+    }
+
+/* Table Container */
+.tableContainer {
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    overflow-x: auto;
+    margin-bottom: var(--space-lg);
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+}
+
+    .table thead th {
+        position: sticky;
+        top: 0;
+        background: var(--color-bg-tertiary);
+        color: var(--color-text-muted);
+        font-weight: 600;
+        text-align: left;
+        padding: var(--space-md);
+        border-bottom: 1px solid var(--color-border);
+        white-space: nowrap;
+        cursor: pointer;
+        user-select: none;
+        transition: background-color 0.2s;
+    }
+
+        .table thead th:hover {
+            background: var(--color-bg-hover);
+        }
+
+    .table tbody td {
+        padding: var(--space-md);
+        border-bottom: 1px solid var(--color-border);
+        color: var(--color-text-primary);
+    }
+
+    .table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .table tbody tr:hover {
+        background: var(--color-bg-hover);
+    }
+
+    .table tfoot td {
+        padding: var(--space-md);
+        background: var(--color-bg-tertiary);
+        border-top: 2px solid var(--color-border);
+        font-weight: 600;
+    }
+
+.totalRow {
+    font-size: 0.9375rem;
+}
+
+/* Styling for gains/losses */
+.positive {
+    color: var(--color-success) !important;
+}
+
+.negative {
+    color: var(--color-danger) !important;
+}
+
+/* Symbol Link */
+.symbolLink {
+    color: var(--color-primary);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s;
+}
+
+    .symbolLink:hover {
+        color: var(--color-primary-hover);
+        text-decoration: underline;
+    }
+
+/* Live Price Indicator */
+.livePrice {
+    color: var(--color-primary);
+    font-weight: 600;
+}
+
+/* Sort Indicator */
+.sortIndicator {
+    margin-left: 0.25rem;
+    opacity: 0.4;
+    font-size: 0.75rem;
+}
+
+    .sortIndicator.sortActive {
+        opacity: 1;
+        color: var(--color-primary);
+    }
+
+/* Info Note */
+.infoNote {
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-md);
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .summaryGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .searchInput {
+        max-width: none;
+    }
+
+    .table {
+        font-size: 0.8125rem;
+    }
+
+        .table thead th,
+        .table tbody td,
+        .table tfoot td {
+            padding: var(--space-sm);
+        }
+
+    .summaryValue {
+        font-size: 1.5rem;
+    }
+}
