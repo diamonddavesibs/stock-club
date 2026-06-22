@@ -435,7 +435,7 @@ export default function DFDIIHoldingsPage() {
                     <strong>Note:</strong> Static data (Qty, Price, Date, Cost Basis, Dividends, Months Held) is from the original PDF as of 6/16/2026.
                     Live pricing updates Market Value, Gain, and Return calculations automatically via Finnhub API.
                 </div>
-            </main>
+            </main> 
         </div>
     );
 }
