@@ -170,13 +170,13 @@ export default function AdminUsersPage() {
                         <span className={styles.navIcon}>👥</span>
                         Members
                     </Link>
-                    <Link href="/admin/users" className={`${styles.navItem} ${styles.navItemActive}`}>
-                        <span className={styles.navIcon}>🛡️</span>
-                        Admin Panel
-                    </Link>
                     <Link href="/settings" className={styles.navItem}>
                         <span className={styles.navIcon}>⚙️</span>
                         Settings
+                    </Link>
+                    <Link href="/admin/users" className={`${styles.navItem} ${styles.navItemActive}`}>
+                        <span className={styles.navIcon}>🔐</span>
+                        Admin Panel
                     </Link>
                 </nav>
 
