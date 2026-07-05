@@ -1,23 +1,32 @@
-import { Resend } from 'resend';
+import nodemailer from 'nodemailer';
 
-// Initialize Resend only if API key is available
-const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
-
+// Initialize SMTP transporter only if credentials are available
+const transporter = process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASSWORD
+    ? nodemailer.createTransport({
+        host: process.env.SMTP_HOST,
+        port: Number(process.env.SMTP_PORT) || 465,
+        secure: true, // true for port 465 (SSL/TLS)
+        auth: {
+            user: process.env.SMTP_USER,
+            pass: process.env.SMTP_PASSWORD,
+        },
+    })
+    : null;
 export async function sendPasswordResetEmail(
     email: string,
     name: string,
     resetToken: string
 ): Promise<void> {
-    if (!resend) {
-        console.log('Resend API key not configured. Would send password reset email to:', email);
-        return;
+    if (!transporter) {
+        console.error('SMTP credentials not configured — cannot send password reset email to:', email);
+        throw new Error('Email service is not configured');
     }
 
     const resetUrl = `${process.env.NEXTAUTH_URL}/reset-password?token=${resetToken}`;
 
     try {
-        await resend.emails.send({
-            from: process.env.RESEND_FROM_EMAIL || 'noreply@dfdii.com',
+        await transporter.sendMail({
+            from: process.env.SMTP_FROM_EMAIL || 'noreply@dfdii.com',
             to: email,
             subject: 'Reset Your DFDII Stock Club Password',
             html: `
@@ -77,17 +86,16 @@ export async function sendWelcomeEmail(
     name: string,
     temporaryPassword: string
 ): Promise<void> {
-    if (!resend) {
-        console.log('Resend API key not configured. Would send welcome email to:', email);
-        console.log('Temporary password:', temporaryPassword);
-        return;
+    if (!transporter) {
+        console.error('SMTP credentials not configured — cannot send welcome email to:', email);
+        throw new Error('Email service is not configured');
     }
 
     const loginUrl = `${process.env.NEXTAUTH_URL}/login`;
 
     try {
-        await resend.emails.send({
-            from: process.env.RESEND_FROM_EMAIL || 'noreply@dfdii.com',
+        await transporter.sendMail({
+            from: process.env.SMTP_FROM_EMAIL || 'noreply@dfdii.com',
             to: email,
             subject: 'Welcome to DFDII Stock Club',
             html: `
