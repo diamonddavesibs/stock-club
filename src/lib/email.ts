@@ -12,6 +12,7 @@ const transporter = process.env.SMTP_HOST && process.env.SMTP_USER && process.en
         },
     })
     : null;
+
 export async function sendPasswordResetEmail(
     email: string,
     name: string,
@@ -25,7 +26,7 @@ export async function sendPasswordResetEmail(
     const resetUrl = `${process.env.NEXTAUTH_URL}/reset-password?token=${resetToken}`;
 
     try {
-        await transporter.sendMail({
+        const info = await transporter.sendMail({
             from: process.env.SMTP_FROM_EMAIL || 'noreply@dfdii.com',
             to: email,
             subject: 'Reset Your DFDII Stock Club Password',
@@ -75,6 +76,14 @@ export async function sendPasswordResetEmail(
                 </html>
             `,
         });
+
+        console.log('Password reset email accepted by SMTP server:', {
+            messageId: info.messageId,
+            accepted: info.accepted,
+            rejected: info.rejected,
+            response: info.response,
+            envelope: info.envelope,
+        });
     } catch (error) {
         console.error('Failed to send password reset email:', error);
         throw new Error('Failed to send password reset email');
@@ -94,7 +103,7 @@ export async function sendWelcomeEmail(
     const loginUrl = `${process.env.NEXTAUTH_URL}/login`;
 
     try {
-        await transporter.sendMail({
+        const info = await transporter.sendMail({
             from: process.env.SMTP_FROM_EMAIL || 'noreply@dfdii.com',
             to: email,
             subject: 'Welcome to DFDII Stock Club',
@@ -173,6 +182,14 @@ export async function sendWelcomeEmail(
                 </body>
                 </html>
             `,
+        });
+
+        console.log('Welcome email accepted by SMTP server:', {
+            messageId: info.messageId,
+            accepted: info.accepted,
+            rejected: info.rejected,
+            response: info.response,
+            envelope: info.envelope,
         });
     } catch (error) {
         console.error('Failed to send welcome email:', error);
