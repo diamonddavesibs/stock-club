@@ -394,7 +394,7 @@ export default function DFDIIHoldingsPage() {
                     <table className={styles.table}>
                         <thead>
                             <tr>
-                                <th onClick={() => handleSort("symbol")}>
+                                <th className={styles.stickyColumn} onClick={() => handleSort("symbol")}>
                                     Symbol <SortIcon column="symbol" />
                                 </th>
                                 <th onClick={() => handleSort("qty")} style={{ textAlign: 'right' }}>
@@ -450,7 +450,7 @@ export default function DFDIIHoldingsPage() {
                         <tbody>
                             {filteredAndSortedHoldings.map((holding) => (
                                 <tr key={holding.symbol}>
-                                    <td>
+                                    <td className={styles.stickyColumn}>
                                         <Link href={`/stock/${holding.symbol}`} className={styles.symbolLink}>
                                             {holding.symbol}
                                         </Link>
@@ -527,30 +527,4 @@ export default function DFDIIHoldingsPage() {
             </main>
         </div>
     );
-    <nav className={dashStyles.sidebarNav} onClick={() => setSidebarOpen(false)}>
-        <Link href="/dashboard" className={dashStyles.navItem}>
-            <span className={dashStyles.navIcon}>📊</span>
-            Dashboard
-        </Link>
-        <Link href="/dfdii-holdings" className={`${dashStyles.navItem} ${dashStyles.navItemActive}`}>
-            <span className={dashStyles.navIcon}>📈</span>
-            DFDII Holdings
-        </Link>
-        {user?.role === "ADMIN" && (
-            <Link href="/members" className={dashStyles.navItem}>
-                <span className={dashStyles.navIcon}>👥</span>
-                Members
-            </Link>
-        )}
-        <Link href="/settings" className={dashStyles.navItem}>
-            <span className={dashStyles.navIcon}>⚙️</span>
-            Settings
-        </Link>
-        {user?.role === "ADMIN" && (
-            <Link href="/admin/users" className={dashStyles.navItem}>
-                <span className={dashStyles.navIcon}>🔐</span>
-                Admin Panel
-            </Link>
-        )}
-    </nav>
 }
