@@ -36,9 +36,8 @@ interface LivePrice {
 
 // Static data from the PDF (as of 6/16/2026)
 const staticHoldings: DFDIIHolding[] = [
-    { symbol: "GGN", qty: 6400, price: 3.18, date: "2/17/2021", costBasis: 20382.08, dividends: 10654.00, yieldPercent: 0, divYTD: 0, monthsHeld: 64 },
+    { symbol: "GGN", qty: 7000, price: 3.33, date: "2/17/2021", costBasis: 23274.08, dividends: 10654.00, yieldPercent: 0, divYTD: 0, monthsHeld: 64 },
     { symbol: "AMZN", qty: 175, price: 141.93, date: "9/21/2022", costBasis: 24838.10, dividends: 0.00, yieldPercent: 0, divYTD: 0, monthsHeld: 45 },
-    { symbol: "GNRC", qty: 100, price: 113.47, date: "4/16/2025", costBasis: 11347.00, dividends: 0.00, yieldPercent: 0, divYTD: 0, monthsHeld: 14 },
     { symbol: "GNT", qty: 2000, price: 4.13, date: "3/16/2022", costBasis: 8250.40, dividends: 3980.00, yieldPercent: 0, divYTD: 0, monthsHeld: 51 },
     { symbol: "KO", qty: 300, price: 53.56, date: "2/17/2021", costBasis: 16069.47, dividends: 3743.00, yieldPercent: 0, divYTD: 0, monthsHeld: 64 },
     { symbol: "ET", qty: 1000, price: 12.64, date: "8/16/2023", costBasis: 12639.00, dividends: 3575.00, yieldPercent: 0, divYTD: 0, monthsHeld: 34 },
@@ -57,7 +56,7 @@ const staticHoldings: DFDIIHolding[] = [
     { symbol: "BKR", qty: 100, price: 53.50, date: "1/21/2026", costBasis: 5350.00, dividends: 46.00, yieldPercent: 0, divYTD: 0, monthsHeld: 5 },
     { symbol: "AUR", qty: 750, price: 5.70, date: "8/20/2025", costBasis: 4275.00, dividends: 0.00, yieldPercent: 0, divYTD: 0, monthsHeld: 10 },
     { symbol: "ORCL", qty: 100, price: 185.75, date: "11/19/2025", costBasis: 18575.00, dividends: 25.00, yieldPercent: 0, divYTD: 0, monthsHeld: 7 },
-    { symbol: "HD", qty: 50, price: 339.58, date: "11/19/2025", costBasis: 16978.93, dividends: 232.25, yieldPercent: 0, divYTD: 0, monthsHeld: 7 },
+    { symbol: "HD", qty: 70, price: 338.03, date: "11/19/2025", costBasis: 23656.33, dividends: 232.25, yieldPercent: 0, divYTD: 0, monthsHeld: 7 },
     { symbol: "APLD", qty: 100, price: 45.24, date: "5/27/2026", costBasis: 4524.00, dividends: 0.00, yieldPercent: 0, divYTD: 0, monthsHeld: 1 },
     { symbol: "LGN", qty: 100, price: 88.87, date: "5/27/2026", costBasis: 8887.00, dividends: 0.00, yieldPercent: 0, divYTD: 0, monthsHeld: 1 },
     { symbol: "IBM", qty: 30, price: 290.00, date: "11/19/2025", costBasis: 8700.00, dividends: 101.10, yieldPercent: 0, divYTD: 0, monthsHeld: 7 },
@@ -66,6 +65,8 @@ const staticHoldings: DFDIIHolding[] = [
     { symbol: "RKT", qty: 250, price: 21.10, date: "9/17/2025", costBasis: 5273.75, dividends: 0.00, yieldPercent: 0, divYTD: 0, monthsHeld: 9 },
     { symbol: "HUMA", qty: 2000, price: 2.43, date: "5/21/2025", costBasis: 4856.40, dividends: 0.00, yieldPercent: 0, divYTD: 0, monthsHeld: 13 },
     { symbol: "BSX", qty: 150, price: 70.43, date: "3/19/2026", costBasis: 10564.50, dividends: 0.00, yieldPercent: 0, divYTD: 0, monthsHeld: 3 },
+    { symbol: "ARLO", qty: 250, price: 13.24, date: "7/23/2026", costBasis: 3310.00, dividends: 0.00, yieldPercent: 0, divYTD: 0, monthsHeld: 0 },
+    { symbol: "CHYM", qty: 250, price: 22.26, date: "7/23/2026", costBasis: 5565.00, dividends: 0.00, yieldPercent: 0, divYTD: 0, monthsHeld: 0 },
 ];
 
 type SortKey = "symbol" | "qty" | "price" | "date" | "lastPrice" | "costBasis" | "marketValue" | "dayChange" | "dayChangePercent" | "gainDollar" | "gainPercent" | "dividends" | "return" | "returnPercent" | "returnPerMonth";
