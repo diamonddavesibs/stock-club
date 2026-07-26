@@ -42,6 +42,17 @@ export async function GET() {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
+        if (!clubValuesSnapshot) {
+            const table = parseClubValuesCsv(DEFAULT_CLUB_VALUES_CSV);
+            return NextResponse.json({
+                table,
+                csv: DEFAULT_CLUB_VALUES_CSV,
+                canEdit: canEditClubValues(session.user),
+                updatedAt: null,
+                updatedBy: null,
+            });
+        }
+
         let saved: ClubValuesSnapshotRecord | null = null;
 
         try {
@@ -93,6 +104,13 @@ export async function PUT(request: NextRequest) {
         }
 
         const table = parseClubValuesCsv(csv);
+
+        if (!clubValuesSnapshot) {
+            return NextResponse.json(
+                { error: "Club values storage not initialized. Run Prisma migration and redeploy." },
+                { status: 503 }
+            );
+        }
 
         const saved = await clubValuesSnapshot.upsert({
             where: { key: CLUB_VALUES_KEY },

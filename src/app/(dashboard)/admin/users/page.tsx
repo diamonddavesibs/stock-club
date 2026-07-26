@@ -15,8 +15,6 @@ interface User {
     createdAt: string;
 }
 
-const ROLE_OPTIONS = ["MEMBER", "MANAGER", "ADMIN"] as const;
-
 export default function AdminUsersPage() {
     const { data: session, status } = useSession();
     const router = useRouter();
@@ -338,11 +336,9 @@ export default function AdminUsersPage() {
                                                     className={adminStyles.formInput}
                                                     style={{ minWidth: "120px", padding: "0.4rem 0.5rem", fontSize: "0.8rem" }}
                                                 >
-                                                    {ROLE_OPTIONS.map((role) => (
-                                                        <option key={role} value={role}>
-                                                            {role}
-                                                        </option>
-                                                    ))}
+                                                    <option value="MEMBER">MEMBER</option>
+                                                    <option value="MANAGER">MANAGER</option>
+                                                    <option value="ADMIN">ADMIN</option>
                                                 </select>
                                             </div>
                                         </td>
