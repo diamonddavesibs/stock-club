@@ -61,6 +61,11 @@
     font-family: inherit;
 }
 
+.formInput option {
+    color: #111827;
+    background: #ffffff;
+}
+
 .formInput:focus {
     outline: none;
     border-color: var(--color-accent-primary);

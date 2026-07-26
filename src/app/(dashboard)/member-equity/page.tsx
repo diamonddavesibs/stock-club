@@ -459,8 +459,10 @@ export default function MemberEquityPage() {
                                                     background: "var(--color-bg-elevated)",
                                                     border: "1px solid var(--color-border)",
                                                     borderRadius: "8px",
-                                                    color: "var(--color-text-primary)",
+                                                    color: "#ffffff",
                                                 }}
+                                                labelStyle={{ color: "#ffffff" }}
+                                                itemStyle={{ color: "#ffffff" }}
                                                 formatter={(value, name) => [
                                                     formatCurrency(Number(value ?? 0)),
                                                     String(name ?? ""),
