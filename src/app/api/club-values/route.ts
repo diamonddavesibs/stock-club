@@ -28,6 +28,12 @@ const clubValuesSnapshot = (
     prisma as unknown as { clubValuesSnapshot: ClubValuesSnapshotDelegate }
 ).clubValuesSnapshot;
 
+function isStorageNotInitializedError(error: unknown): boolean {
+    if (!error) return false;
+    const message = error instanceof Error ? error.message : String(error);
+    return /P2021|does not exist|relation .*ClubValuesSnapshot|clubvaluessnapshot/i.test(message);
+}
+
 export async function GET() {
     try {
         const session = await auth();
@@ -36,9 +42,17 @@ export async function GET() {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        const saved = await clubValuesSnapshot.findUnique({
-            where: { key: CLUB_VALUES_KEY },
-        });
+        let saved: ClubValuesSnapshotRecord | null = null;
+
+        try {
+            saved = await clubValuesSnapshot.findUnique({
+                where: { key: CLUB_VALUES_KEY },
+            });
+        } catch (storageError) {
+            if (!isStorageNotInitializedError(storageError)) {
+                throw storageError;
+            }
+        }
 
         const csv = saved?.csvData ?? DEFAULT_CLUB_VALUES_CSV;
         const table = parseClubValuesCsv(csv);
@@ -103,6 +117,15 @@ export async function PUT(request: NextRequest) {
     } catch (error) {
         if (error instanceof Error && error.message.includes("CSV")) {
             return NextResponse.json({ error: error.message }, { status: 400 });
+        }
+
+        if (isStorageNotInitializedError(error)) {
+            return NextResponse.json(
+                {
+                    error: "Club values storage not initialized. Run Prisma migration and redeploy.",
+                },
+                { status: 503 }
+            );
         }
 
         console.error("Failed to save club values:", error);
