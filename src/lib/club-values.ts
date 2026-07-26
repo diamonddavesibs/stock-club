@@ -18,6 +18,7 @@ Robert,8.178,550.00,550.00,750.00,850.00,950.00,"1,050.00","1,150.00","1,250.00"
 TOTAL,"2,722.004","212,526.00","212,526.00","216,607.44","218,260.44","219,821.32","219,821.32","219,821.32","225,901.32","421,835.53",`;
 
 const REQUIRED_HEADERS = ["NAME", "SHARES", "Value", "Gain %"];
+const CLUB_VALUES_EDITOR_EMAILS = ["joeymess16@gmail.com"];
 
 export interface ClubValuesTableData {
     headers: string[];
@@ -65,7 +66,12 @@ export function parseClubValuesCsv(csv: string): ClubValuesTableData {
     return { headers, rows };
 }
 
-export function canEditClubValues(user: { role?: string | null; name?: string | null } | null | undefined): boolean {
+export function canEditClubValues(
+    user: { role?: string | null; name?: string | null; email?: string | null } | null | undefined
+): boolean {
     if (!user) return false;
-    return user.role === "ADMIN" || user.role === "MANAGER";
+    if (user.role === "ADMIN" || user.role === "MANAGER") return true;
+
+    const email = user.email?.trim().toLowerCase();
+    return !!email && CLUB_VALUES_EDITOR_EMAILS.includes(email);
 }
