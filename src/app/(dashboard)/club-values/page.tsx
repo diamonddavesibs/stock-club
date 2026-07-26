@@ -107,7 +107,7 @@ export default function ClubValuesPage() {
 
     const updatedLabel = useMemo(() => {
         if (!updatedAt) return "Using default dataset";
-        const date = new Date(updatedAt).toLocaleString();
+        const date = new Date(updatedAt).toLocaleString("en-US");
         return updatedBy ? `Last updated by ${updatedBy} on ${date}` : `Last updated on ${date}`;
     }, [updatedAt, updatedBy]);
 

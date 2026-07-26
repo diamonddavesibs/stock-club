@@ -342,7 +342,7 @@ export default function AdminUsersPage() {
                                                 </select>
                                             </div>
                                         </td>
-                                        <td>{new Date(user.createdAt).toLocaleDateString()}</td>
+                                        <td>{new Date(user.createdAt).toLocaleDateString("en-US")}</td>
                                         <td>
                                             <div className={adminStyles.actions}>
                                                 <button

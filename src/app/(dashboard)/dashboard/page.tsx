@@ -491,7 +491,7 @@ export default function DashboardPage() {
                         </div>
                         <div className={styles.headerActions}>
                             <div className={styles.dateTimeWidget}>
-                                <div>{now.toLocaleDateString()}</div>
+                                <div>{now.toLocaleDateString("en-US")}</div>
                                 <div>{now.toLocaleTimeString()}</div>
                             </div>
                             <StockSearch />
