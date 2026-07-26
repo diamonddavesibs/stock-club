@@ -172,6 +172,11 @@
     color: #3b82f6;
 }
 
+.badgeManager {
+    background: rgba(245, 158, 11, 0.14);
+    color: #f59e0b;
+}
+
 .actions {
     display: flex;
     gap: 0.5rem;

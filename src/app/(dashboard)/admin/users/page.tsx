@@ -15,6 +15,8 @@ interface User {
     createdAt: string;
 }
 
+const ROLE_OPTIONS = ["MEMBER", "MANAGER", "ADMIN"] as const;
+
 export default function AdminUsersPage() {
     const { data: session, status } = useSession();
     const router = useRouter();
@@ -52,6 +54,32 @@ export default function AdminUsersPage() {
             setError("Failed to load users");
         } finally {
             setIsLoading(false);
+        }
+    };
+
+    const handleRoleChange = async (userId: string, role: string) => {
+        setError("");
+        setSuccess("");
+
+        try {
+            const response = await fetch(`/api/admin/users/${userId}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ role }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                setSuccess("User role updated successfully");
+                setUsers((prev) =>
+                    prev.map((u) => (u.id === userId ? { ...u, role: data.user.role } : u))
+                );
+            } else {
+                setError(data.error || "Failed to update role");
+            }
+        } catch (err) {
+            setError("Failed to update role");
         }
     };
 
@@ -162,9 +190,13 @@ export default function AdminUsersPage() {
                         <span className={styles.navIcon}>📊</span>
                         Dashboard
                     </Link>
-                    <Link href="/dfdii-holdings" className={styles.navItem}>
-                        <span className={styles.navIcon}>📈</span>
-                        DFDII Holdings
+                    <Link href="/member-equity" className={styles.navItem}>
+                        <span className={styles.navIcon}>🥧</span>
+                        Member Equity
+                    </Link>
+                    <Link href="/club-values" className={styles.navItem}>
+                        <span className={styles.navIcon}>🧾</span>
+                        Club Values
                     </Link>
                     <Link href="/members" className={styles.navItem}>
                         <span className={styles.navIcon}>👥</span>
@@ -257,6 +289,7 @@ export default function AdminUsersPage() {
                                         className={adminStyles.formInput}
                                     >
                                         <option value="MEMBER">Member</option>
+                                        <option value="MANAGER">Manager</option>
                                         <option value="ADMIN">Admin</option>
                                     </select>
                                 </div>
@@ -291,9 +324,27 @@ export default function AdminUsersPage() {
                                         <td>{user.name}</td>
                                         <td>{user.email}</td>
                                         <td>
-                                            <span className={`${adminStyles.badge} ${user.role === 'ADMIN' ? adminStyles.badgeAdmin : adminStyles.badgeMember}`}>
+                                            <span className={`${adminStyles.badge} ${user.role === 'ADMIN'
+                                                ? adminStyles.badgeAdmin
+                                                : user.role === 'MANAGER'
+                                                    ? adminStyles.badgeManager
+                                                    : adminStyles.badgeMember}`}>
                                                 {user.role}
                                             </span>
+                                            <div style={{ marginTop: "0.5rem" }}>
+                                                <select
+                                                    value={user.role}
+                                                    onChange={(e) => handleRoleChange(user.id, e.target.value)}
+                                                    className={adminStyles.formInput}
+                                                    style={{ minWidth: "120px", padding: "0.4rem 0.5rem", fontSize: "0.8rem" }}
+                                                >
+                                                    {ROLE_OPTIONS.map((role) => (
+                                                        <option key={role} value={role}>
+                                                            {role}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            </div>
                                         </td>
                                         <td>{new Date(user.createdAt).toLocaleDateString()}</td>
                                         <td>

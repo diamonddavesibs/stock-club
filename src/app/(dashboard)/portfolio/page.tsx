@@ -15,6 +15,13 @@ interface LivePrice {
     previousClose: number;
 }
 
+interface StockQuote {
+    currentPrice: number;
+    change: number;
+    changePercent: number;
+    previousClose: number;
+}
+
 type SortKey = "symbol" | "quantity" | "costPerShare" | "currentPrice" | "marketValue" | "gainLoss" | "gainLossPercent" | "allocation";
 type SortOrder = "asc" | "desc";
 
@@ -43,7 +50,7 @@ export default function PortfolioPage() {
                     const data = await response.json();
                     if (data.quotes) {
                         const prices: Record<string, LivePrice> = {};
-                        Object.entries(data.quotes).forEach(([symbol, quote]: [string, any]) => {
+                        Object.entries(data.quotes as Record<string, StockQuote>).forEach(([symbol, quote]) => {
                             prices[symbol] = {
                                 currentPrice: quote.currentPrice,
                                 change: quote.change,
@@ -174,9 +181,13 @@ export default function PortfolioPage() {
                         <span className={dashStyles.navIcon}>📊</span>
                         Dashboard
                     </Link>
-                    <Link href="/dfdii-holdings" className={dashStyles.navItem}>
-                        <span className={dashStyles.navIcon}>📈</span>
-                        DFDII Holdings
+                    <Link href="/member-equity" className={dashStyles.navItem}>
+                        <span className={dashStyles.navIcon}>🥧</span>
+                        Member Equity
+                    </Link>
+                    <Link href="/club-values" className={dashStyles.navItem}>
+                        <span className={dashStyles.navIcon}>🧾</span>
+                        Club Values
                     </Link>
                     {user?.role === "ADMIN" && (
                         <Link href="/members" className={dashStyles.navItem}>

@@ -221,6 +221,31 @@ export default function StockDetailPage() {
                     <Link href="/transactions" className={dashStyles.navItem}>
                         <span className={dashStyles.navIcon}>📋</span> Transactions
                     </Link>
+                    <Link href="/member-equity" className={dashStyles.navItem}>
+                        <span className={dashStyles.navIcon}>🥧</span> Member Equity
+                    </Link>
+                    <Link href="/club-values" className={dashStyles.navItem}>
+                        <span className={dashStyles.navIcon}>🧾</span> Club Values
+                    </Link>
+                    {user?.role === "ADMIN" && (
+                        <Link href="/members" className={dashStyles.navItem}>
+                            <span className={dashStyles.navIcon}>👥</span> Members
+                        </Link>
+                    )}
+                    <Link href="/settings" className={dashStyles.navItem}>
+                        <span className={dashStyles.navIcon}>⚙️</span> Settings
+                    </Link>
+                    {user?.role === "ADMIN" && (
+                        <Link href="/admin/users" className={dashStyles.navItem}>
+                            <span className={dashStyles.navIcon}>🔐</span> Admin Panel
+                        </Link>
+                    )}
+                    <Link href="/member-equity" className={dashStyles.navItem}>
+                        <span className={dashStyles.navIcon}>🥧</span> Member Equity
+                    </Link>
+                    <Link href="/club-values" className={dashStyles.navItem}>
+                        <span className={dashStyles.navIcon}>🧾</span> Club Values
+                    </Link>
                     {user?.role === "ADMIN" && (
                         <Link href="/members" className={dashStyles.navItem}>
                             <span className={dashStyles.navIcon}>👥</span> Members

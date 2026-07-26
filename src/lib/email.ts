@@ -30,6 +30,23 @@ export async function sendPasswordResetEmail(
             from: process.env.SMTP_FROM_EMAIL || 'noreply@dfdii.com',
             to: email,
             subject: 'Reset Your DFDII Stock Club Password',
+            text: `Hi ${name},
+
+We received a request to reset your password for your DFDII Stock Club account.
+
+Reset your password using the link below:
+${resetUrl}
+
+This link will expire in 24 hours.
+
+If you didn't request this password reset, you can safely ignore this email.
+
+Best regards,
+DFDII Stock Club Team
+
+--
+DFDII Stock Club - Investment Portfolio Management
+This is an automated email. Please do not reply.`,
             html: `
                 <!DOCTYPE html>
                 <html>
@@ -107,6 +124,32 @@ export async function sendWelcomeEmail(
             from: process.env.SMTP_FROM_EMAIL || 'noreply@dfdii.com',
             to: email,
             subject: 'Welcome to DFDII Stock Club',
+            text: `Hi ${name},
+
+Your account has been created successfully! You can now access the DFDII Stock Club investment portfolio platform.
+
+Your Login Credentials:
+Email: ${email}
+Temporary Password: ${temporaryPassword}
+
+Important: Please change your password after your first login for security.
+
+Login now: ${loginUrl}
+
+Getting Started:
+1. Click the login link above
+2. Enter your email and temporary password
+3. Go to Settings to change your password
+4. Import your Schwab portfolio data to get started
+
+If you have any questions, please contact your club administrator.
+
+Best regards,
+DFDII Stock Club Team
+
+--
+DFDII Stock Club - Investment Portfolio Management
+This is an automated email. Please do not reply.`,
             html: `
                 <!DOCTYPE html>
                 <html>

@@ -4,6 +4,8 @@ import { prisma } from "@/lib/prisma";
 import { hashPassword, generateRandomPassword } from "@/lib/password";
 import { sendWelcomeEmail } from "@/lib/email";
 
+const ALLOWED_ROLES = ["ADMIN", "MANAGER", "MEMBER"] as const;
+
 // GET all users (admin only)
 export async function GET() {
     try {
@@ -45,6 +47,10 @@ export async function POST(request: NextRequest) {
         // Validate input
         if (!name || !email) {
             return NextResponse.json({ error: "Name and email are required" }, { status: 400 });
+        }
+
+        if (role && !ALLOWED_ROLES.includes(role)) {
+            return NextResponse.json({ error: "Invalid role" }, { status: 400 });
         }
 
         // Normalize email to lowercase and trim whitespace

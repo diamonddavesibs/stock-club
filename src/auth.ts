@@ -89,6 +89,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             const isOnDashboard = pathname.startsWith("/dashboard") ||
                 pathname.startsWith("/portfolio") ||
                 pathname.startsWith("/transactions") ||
+                pathname.startsWith("/club-values") ||
                 pathname.startsWith("/members") ||
                 pathname.startsWith("/settings");
 

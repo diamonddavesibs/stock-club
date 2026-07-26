@@ -128,7 +128,7 @@ export default function TransactionsPage() {
         }
     };
 
-    const SortIcon = ({ column }: { column: SortKey }) => {
+    const sortIndicator = (column: SortKey) => {
         const isActive = sortKey === column;
         return (
             <span className={`${styles.sortIndicator} ${isActive ? styles.sortActive : ""}`}>
@@ -170,9 +170,13 @@ export default function TransactionsPage() {
                         <span className={dashStyles.navIcon}>📊</span>
                         Dashboard
                     </Link>
-                    <Link href="/dfdii-holdings" className={dashStyles.navItem}>
-                        <span className={dashStyles.navIcon}>📈</span>
-                        DFDII Holdings
+                    <Link href="/member-equity" className={dashStyles.navItem}>
+                        <span className={dashStyles.navIcon}>🥧</span>
+                        Member Equity
+                    </Link>
+                    <Link href="/club-values" className={dashStyles.navItem}>
+                        <span className={dashStyles.navIcon}>🧾</span>
+                        Club Values
                     </Link>
                     {user?.role === "ADMIN" && (
                         <Link href="/members" className={dashStyles.navItem}>
@@ -286,24 +290,24 @@ export default function TransactionsPage() {
                                     <thead>
                                         <tr>
                                             <th onClick={() => handleSort("date")}>
-                                                Date <SortIcon column="date" />
+                                                Date {sortIndicator("date")}
                                             </th>
                                             <th onClick={() => handleSort("action")}>
-                                                Type <SortIcon column="action" />
+                                                Type {sortIndicator("action")}
                                             </th>
                                             <th onClick={() => handleSort("symbol")}>
-                                                Symbol <SortIcon column="symbol" />
+                                                Symbol {sortIndicator("symbol")}
                                             </th>
                                             <th>Description</th>
                                             <th onClick={() => handleSort("quantity")}>
-                                                Quantity <SortIcon column="quantity" />
+                                                Quantity {sortIndicator("quantity")}
                                             </th>
                                             <th onClick={() => handleSort("price")}>
-                                                Price <SortIcon column="price" />
+                                                Price {sortIndicator("price")}
                                             </th>
                                             <th>Fees</th>
                                             <th onClick={() => handleSort("amount")}>
-                                                Amount <SortIcon column="amount" />
+                                                Amount {sortIndicator("amount")}
                                             </th>
                                         </tr>
                                     </thead>

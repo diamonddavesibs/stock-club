@@ -9,7 +9,7 @@ export default auth((req) => {
     const { nextUrl } = req;
 
     // Protected routes
-    const protectedPaths = ["/dashboard", "/portfolio", "/transactions", "/settings"];
+    const protectedPaths = ["/dashboard", "/portfolio", "/transactions", "/settings", "/member-equity", "/club-values"];
     const isProtectedRoute = protectedPaths.some(path => nextUrl.pathname.startsWith(path));
 
     // Admin-only routes
