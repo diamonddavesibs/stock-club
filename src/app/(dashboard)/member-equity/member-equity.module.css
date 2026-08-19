@@ -292,13 +292,20 @@
     background: var(--color-bg-secondary);
     color: var(--color-text-primary) !important;
     font-weight: 500;
+    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.15);
 }
 
+.table thead th.stickyCol,
 .historyTable thead th.stickyCol {
     background: var(--color-bg-elevated);
     z-index: 2;
 }
 
+.table tfoot td.stickyCol,
 .historyTable tfoot td.stickyCol {
     background: var(--color-bg-elevated);
+}
+
+.table tbody tr:hover td.stickyCol {
+    background: var(--color-bg-card);
 }

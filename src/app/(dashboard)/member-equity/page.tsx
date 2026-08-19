@@ -316,7 +316,7 @@ export default function MemberEquityPage() {
                                 <table className={styles.table}>
                                     <thead>
                                         <tr>
-                                            <th onClick={() => handleSort("displayName")}>
+                                            <th className={styles.stickyCol} onClick={() => handleSort("displayName")}>
                                                 Name{sortIndicator("displayName")}
                                             </th>
                                             <th className={styles.numeric} onClick={() => handleSort("shares")}>
@@ -350,7 +350,7 @@ export default function MemberEquityPage() {
                                                     key={row.key}
                                                     className={isMe ? styles.ownRow : undefined}
                                                 >
-                                                    <td className={styles.nameCell}>
+                                                    <td className={`${styles.nameCell} ${styles.stickyCol}`}>
                                                         <span className={styles.memberName}>
                                                             {row.displayName}
                                                         </span>
@@ -394,7 +394,7 @@ export default function MemberEquityPage() {
                                     </tbody>
                                     <tfoot>
                                         <tr>
-                                            <td>Total</td>
+                                            <td className={styles.stickyCol}>Total</td>
                                             <td className={styles.numeric}>
                                                 {formatShares(totals.shares)}
                                             </td>
