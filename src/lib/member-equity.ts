@@ -17,23 +17,22 @@
 /**
  * Club value per share, set by the member who tracks dues collected.
  *
- * NOTE: the spreadsheet prints 154.97 but computes each member's value from a
- * higher-precision figure (421,835.53 / 2,722.004 = 154.972414). Using the
- * printed 154.97 here makes the club total come out $6.73 low. Set this to
- * 154.972414 to reconcile the total exactly; 154.97 is kept because it is the
+ * NOTE: the spreadsheet prints 162.55 but computes each member's value from a
+ * higher-precision figure (444,350.75 / 2,733.554 = 162.554224). Using the
+ * printed 162.55 here makes the club total come out $11.38 low. Set this to
+ * 162.554224 to reconcile the total exactly; 162.55 is kept because it is the
  * number actually published on the statement.
  */
-export const VALUE_PER_SHARE = 154.97;
+export const VALUE_PER_SHARE = 162.55;
 
 /** Effective date of VALUE_PER_SHARE, as printed on the club statement. */
-export const VALUE_PER_SHARE_AS_OF = "05/26/26";
+export const VALUE_PER_SHARE_AS_OF = "08/18/26";
 
 /**
  * Contribution period labels, oldest first. Must stay in the same order and
  * length as each member's `contributions` array.
  */
 export const CONTRIBUTION_MONTHS = [
-    "11/30/2025",
     "12/31/2025",
     "1/31/2026",
     "2/28/2026",
@@ -41,6 +40,7 @@ export const CONTRIBUTION_MONTHS = [
     "4/30/2026",
     "5/31/2026",
     "6/30/2026",
+    "7/31/2026",
 ] as const;
 
 export interface MemberEquityRecord {
@@ -65,38 +65,48 @@ export interface MemberEquityRecord {
 }
 
 export const memberEquity: MemberEquityRecord[] = [
-    { key: "cosmo",     displayName: "Cosimo Cancelliere", matchName: "Cosimo Cancelliere", shares: 372.498, contributions: [27925, 27925, 28125, 28225, 28325, 28425, 28525, 28625] },
-    { key: "monte",     displayName: "Monte Cariani",      matchName: "Monte Cariani",      shares: 370.872, contributions: [27825, 27825, 28025, 28125, 28225, 28325, 28425, 28425] },
-    { key: "paul",      displayName: "Paul Ciampi",        matchName: "Paul Ciampi",        shares: 372.471, contributions: [27925, 27925, 27925, 28225, 28325, 28425, 28525, 28625] },
-    { key: "joe-r",     displayName: "Joe Grot",           matchName: "Joe Grot",           shares: 372.498, contributions: [27925, 27925, 28125, 28225, 28325, 28425, 28525, 28625] },
-    { key: "len",       displayName: "Lenny Guancione",    matchName: "Lenny Guancione",    shares: 372.170, contributions: [27925, 27925, 28125, 28225, 28325, 28425, 28525, 28625] },
-    { key: "frank",     displayName: "Frank Marshall",     matchName: "Frank Marshall",     shares: 372.498, contributions: [27925, 27925, 28125, 28225, 28325, 28425, 28525, 28625] },
-    { key: "david",     displayName: "David Sibilia",      matchName: "David Sibilia",      shares: 103.469, contributions: [9747, 9747, 9847, 9947, 10047, 10207, 10377, 10477] },
-    { key: "jay",       displayName: "Jay Messina",        matchName: "Jay Messina",        shares: 101.641, contributions: [9729, 9729, 9929, 10129, 10229, 10379, 10544, 10709] },
-    { key: "joe-m",     displayName: "Joe Messina",        matchName: "Joe Messina",        shares: 63.857,  contributions: [6050, 6050, 6831.44, 6831.44, 6831.44, 6831.44, 6996.44, 7161.44] },
-    { key: "mike",      displayName: "Mike Sibilia",       matchName: "Mike Sibilia",       shares: 59.226,  contributions: [5950, 5950, 6150, 6150, 6250, 6450, 6450, 6550] },
-    { key: "jim-flynn", displayName: "Jimmy Flynn",        matchName: "Jimmy Flynn",        shares: 60.478,  contributions: [5950, 5950, 6150, 6250, 6350, 6350, 6550, 6650] },
-    { key: "tommy",     displayName: "Tommy Sibilia",      matchName: "Tommy Sibilia",      shares: 53.811,  contributions: [5250, 5250, 5450, 5550, 5650, 5750, 5850, 5950] },
-    { key: "carmine",   displayName: "Carmine Rubinaccio", matchName: "Carmine Rubinaccio", shares: 23.715,  contributions: [1850, 1850, 2050, 2150, 2350, 2720, 3020, 3320] },
-    { key: "william",   displayName: "Bill Ilaria",        matchName: "Bill Ilaria",        shares: 14.621,  contributions: [null, null, 1000, 1153, 1313.88, 1683.88, 1983.88, 2283.88] },
-    { key: "robert",    displayName: "Robert Sibilia",     matchName: "Robert Sibilia",     shares: 8.178,   contributions: [550, 550, 750, 850, 950, 1050, 1150, 1250] },
+    { key: "cosmo",     displayName: "Cosimo Cancelliere", matchName: "Cosimo Cancelliere", shares: 373.144, contributions: [27925, 28125, 28225, 28325, 28425, 28525, 28625, 28725] },
+    { key: "monte",     displayName: "Monte Cariani",      matchName: "Monte Cariani",      shares: 370.872, contributions: [27825, 28025, 28125, 28225, 28325, 28425, 28425, 28425] },
+    { key: "paul",      displayName: "Paul Ciampi",        matchName: "Paul Ciampi",        shares: 372.471, contributions: [27925, 27925, 28225, 28325, 28425, 28525, 28625, 28625] },
+    { key: "joe-r",     displayName: "Joe Grot",           matchName: "Joe Grot",           shares: 373.144, contributions: [27925, 28125, 28225, 28325, 28425, 28525, 28625, 28725] },
+    { key: "len",       displayName: "Lenny Guancione",    matchName: "Lenny Guancione",    shares: 372.816, contributions: [27925, 28125, 28225, 28325, 28425, 28525, 28625, 28725] },
+    { key: "frank",     displayName: "Frank Marshall",     matchName: "Frank Marshall",     shares: 373.144, contributions: [27925, 28125, 28225, 28325, 28425, 28525, 28625, 28725] },
+    { key: "david",     displayName: "David Sibilia",      matchName: "David Sibilia",      shares: 104.501, contributions: [9747, 9847, 9947, 10047, 10207, 10377, 10477, 10637] },
+    { key: "jay",       displayName: "Jay Messina",        matchName: "Jay Messina",        shares: 102.706, contributions: [9729, 9929, 10129, 10229, 10379, 10544, 10709, 10874] },
+    { key: "joe-m",     displayName: "Joe Messina",        matchName: "Joe Messina",        shares: 64.922, contributions: [6050, 6831.44, 6831.44, 6831.44, 6831.44, 6996.44, 7161.44, 7326.44] },
+    { key: "mike",      displayName: "Mike Sibilia",       matchName: "Mike Sibilia",       shares: 59.871, contributions: [5950, 6150, 6150, 6250, 6450, 6450, 6550, 6650] },
+    { key: "jim-flynn", displayName: "Jimmy Flynn",        matchName: "Jimmy Flynn",        shares: 61.123, contributions: [5950, 6150, 6250, 6350, 6350, 6550, 6650, 6750] },
+    { key: "tommy",     displayName: "Tommy Sibilia",      matchName: "Tommy Sibilia",      shares: 54.456, contributions: [5250, 5450, 5550, 5650, 5750, 5850, 5950, 6050] },
+    { key: "carmine",   displayName: "Carmine Rubinaccio", matchName: "Carmine Rubinaccio", shares: 25.651, contributions: [1850, 2050, 2150, 2350, 2720, 3020, 3320, 3620] },
+    { key: "william",   displayName: "Bill Ilaria",        matchName: "Bill Ilaria",        shares: 16.556, contributions: [null, 1000, 1153, 1313.88, 1683.88, 1983.88, 2283.88, 2583.88] },
+    { key: "robert",    displayName: "Robert Sibilia",     matchName: "Robert Sibilia",     shares: 8.178, contributions: [550, 750, 850, 950, 1050, 1150, 1250, null] },
 ];
 
 /**
- * RECONCILIATION against the club spreadsheet's TOTAL row:
+ * RECONCILIATION against the club spreadsheet's TOTAL row (July 2026 sheet):
  *
- *   Total shares       2,722.003  vs sheet 2,722.004   (0.001 rounding)
- *   Total value      $421,828.80  vs sheet $421,835.53 ($6.73 -- see the
- *                    VALUE_PER_SHARE note above; using 154.972414 instead of
- *                    the printed 154.97 reconciles this exactly)
- *   11/30 .. 3/31 and 6/30 columns  --  exact match
+ *   Total shares       2,733.555  vs sheet 2,733.554   (0.001 rounding)
+ *   Total value      $444,339.37  vs sheet $444,350.75 ($11.38 -- see the
+ *                    VALUE_PER_SHARE note above)
+ *   12/31, 1/31, 2/28, 3/31 and 6/30 columns  --  exact match
+ *   7/31 column      $227,691.32  vs sheet $226,441.32 ($1,250 -- Robert's
+ *                    July cell is blank on the sheet, so the sheet's SUM drops
+ *                    him entirely. His cumulative total is still $1,250, so
+ *                    this page carries it forward. See contributionAt().
  *   4/30 column      $221,871.32  vs sheet $219,821.32
  *   5/31 column      $223,971.32  vs sheet $219,821.32
  *
- * The sheet prints 219,821.32 for 3/31, 4/30 AND 5/31 -- an un-extended SUM
- * formula in the source workbook. Individual member rows are correct (they
- * reconcile at 6/30), so this page sums the member rows rather than reusing
- * the sheet's stale column totals.
+ * The sheet still prints 219,821.32 for 3/31, 4/30 AND 5/31 -- an un-extended
+ * SUM formula in the source workbook, carried over from the June sheet.
+ * Individual member rows are correct (they reconcile at 6/30 and 7/31), so this
+ * page sums the member rows rather than reusing the sheet's stale totals.
+ *
+ * KNOWN SHEET BUG -- the printed "Value %" column is one month stale. On the
+ * July sheet those percentages divide each member's value by the 6/30 column
+ * instead of 7/31 (verified: 15/15 rows match the 6/30 basis, 3/15 match 7/31).
+ * The June sheet did NOT have this problem. This page computes the percentage
+ * against the latest contribution, so figures here are correct but will read
+ * lower than the PDF -- e.g. Carmine 15% here vs 26% printed.
  */
 
 export interface ComputedMemberEquity extends MemberEquityRecord {
@@ -177,10 +187,31 @@ export function computeTotals(
     };
 }
 
+/**
+ * Contribution figure for a member at month `i`, carrying the last known value
+ * forward across blank cells once the member has joined.
+ *
+ * The club sheet leaves a cell blank when a member adds nothing that month, but
+ * the column holds CUMULATIVE dues -- so a blank means "unchanged", not "zero".
+ * Blanks BEFORE a member joins are genuinely zero and stay zero.
+ */
+export function contributionAt(record: MemberEquityRecord, i: number): number {
+    let seen = false;
+    let last = 0;
+    for (let j = 0; j <= i && j < record.contributions.length; j++) {
+        const v = record.contributions[j];
+        if (v !== null && v !== undefined) {
+            seen = true;
+            last = v;
+        }
+    }
+    return seen ? last : 0;
+}
+
 /** Column totals for the contribution history table. */
 export function monthlyTotals(): number[] {
     return CONTRIBUTION_MONTHS.map((_, i) =>
-        memberEquity.reduce((sum, m) => sum + (m.contributions[i] ?? 0), 0)
+        memberEquity.reduce((sum, m) => sum + contributionAt(m, i), 0)
     );
 }
 
