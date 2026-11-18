@@ -52,6 +52,7 @@ const companyNames: Record<string, string> = {
     HUMA: "Humacyte Inc.",
     BSX: "Boston Scientific Corporation",
     CHYM: "Chime Financial Inc.",
+    GLW: "Corning Incorporated",
 };
 
 export const staticHoldings: DFDIIHolding[] = [
@@ -74,18 +75,12 @@ export const staticHoldings: DFDIIHolding[] = [
     { symbol: "CRF",  qty: 2172, price: 7.85,    date: "11/17/2021", costBasis: 17042.32, dividends: 3677.08,  yieldPercent: 0, divYTD: 0, monthsHeld: 58 },
     { symbol: "BKR",  qty: 100,  price: 53.50,   date: "1/21/2026",  costBasis: 5350.00,  dividends: 46.00,    yieldPercent: 0, divYTD: 0, monthsHeld: 5  },
     { symbol: "AUR",  qty: 750,  price: 5.70,    date: "8/20/2025",  costBasis: 4275.00,  dividends: 0.00,     yieldPercent: 0, divYTD: 0, monthsHeld: 10 },
-    { symbol: "ORCL", qty: 100,  price: 185.75,  date: "11/19/2025", costBasis: 18575.00, dividends: 25.00,    yieldPercent: 0, divYTD: 0, monthsHeld: 7  },
     { symbol: "HD",   qty: 70,   price: 338.03,  date: "11/19/2025", costBasis: 23656.33, dividends: 232.25,   yieldPercent: 0, divYTD: 0, monthsHeld: 7  },
-    { symbol: "APLD", qty: 100,  price: 45.24,   date: "5/27/2026",  costBasis: 4524.00,  dividends: 0.00,     yieldPercent: 0, divYTD: 0, monthsHeld: 1  },
-    { symbol: "LGN",  qty: 100,  price: 88.87,   date: "5/27/2026",  costBasis: 8887.00,  dividends: 0.00,     yieldPercent: 0, divYTD: 0, monthsHeld: 1  },
-    { symbol: "IBM",  qty: 30,   price: 290.00,  date: "11/19/2025", costBasis: 8700.00,  dividends: 101.10,   yieldPercent: 0, divYTD: 0, monthsHeld: 7  },
-    { symbol: "LEN",  qty: 100,  price: 105.63,  date: "4/16/2025",  costBasis: 10563.00, dividends: 250.00,   yieldPercent: 0, divYTD: 0, monthsHeld: 14 },
     { symbol: "PLTR", qty: 50,   price: 167.65,  date: "11/19/2025", costBasis: 8382.50,  dividends: 0.00,     yieldPercent: 0, divYTD: 0, monthsHeld: 7  },
-    { symbol: "RKT",  qty: 250,  price: 21.10,   date: "9/17/2025",  costBasis: 5273.75,  dividends: 0.00,     yieldPercent: 0, divYTD: 0, monthsHeld: 9  },
-    { symbol: "HUMA", qty: 2000, price: 2.43,    date: "5/21/2025",  costBasis: 4856.40,  dividends: 0.00,     yieldPercent: 0, divYTD: 0, monthsHeld: 13 },
     { symbol: "BSX",  qty: 150,  price: 70.43,   date: "3/19/2026",  costBasis: 10564.50, dividends: 0.00,     yieldPercent: 0, divYTD: 0, monthsHeld: 3  },
     { symbol: "ARLO", qty: 250,  price: 13.24,   date: "7/23/2026",  costBasis: 3310.00,  dividends: 0.00,     yieldPercent: 0, divYTD: 0, monthsHeld: 0  },
     { symbol: "CHYM", qty: 250,  price: 22.26,   date: "7/23/2026",  costBasis: 5565.00,  dividends: 0.00,     yieldPercent: 0, divYTD: 0, monthsHeld: 0  },
+    { symbol: "GLW",  qty: 100,  price: 136.12,  date: "10/22/2026", costBasis: 13612.00, dividends: 0.00,     yieldPercent: 0, divYTD: 0, monthsHeld: 1  },
 ];
 
 export const dfdiiHoldingsAsPortfolio: Holding[] = staticHoldings.map(h => {
