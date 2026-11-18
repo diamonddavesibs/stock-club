@@ -23,10 +23,10 @@
  * 162.554224 to reconcile the total exactly; 162.55 is kept because it is the
  * number actually published on the statement.
  */
-export const VALUE_PER_SHARE = 162.55;
+export const VALUE_PER_SHARE = 152.48;
 
 /** Effective date of VALUE_PER_SHARE, as printed on the club statement. */
-export const VALUE_PER_SHARE_AS_OF = "08/18/26";
+export const VALUE_PER_SHARE_AS_OF = "11/17/26";
 
 /**
  * Contribution period labels, oldest first. Must stay in the same order and
@@ -41,6 +41,9 @@ export const CONTRIBUTION_MONTHS = [
     "5/31/2026",
     "6/30/2026",
     "7/31/2026",
+    "8/31/2026",
+    "9/30/2026",
+    "10/31/2026",
 ] as const;
 
 export interface MemberEquityRecord {
@@ -65,21 +68,21 @@ export interface MemberEquityRecord {
 }
 
 export const memberEquity: MemberEquityRecord[] = [
-    { key: "cosmo",     displayName: "Cosimo Cancelliere", matchName: "Cosimo Cancelliere", shares: 373.144, contributions: [27925, 28125, 28225, 28325, 28425, 28525, 28625, 28725] },
-    { key: "monte",     displayName: "Monte Cariani",      matchName: "Monte Cariani",      shares: 370.872, contributions: [27825, 28025, 28125, 28225, 28325, 28425, 28425, 28425] },
-    { key: "paul",      displayName: "Paul Ciampi",        matchName: "Paul Ciampi",        shares: 372.471, contributions: [27925, 27925, 28225, 28325, 28425, 28525, 28625, 28625] },
-    { key: "joe-r",     displayName: "Joe Grot",           matchName: "Joe Grot",           shares: 373.144, contributions: [27925, 28125, 28225, 28325, 28425, 28525, 28625, 28725] },
-    { key: "len",       displayName: "Lenny Guancione",    matchName: "Lenny Guancione",    shares: 372.816, contributions: [27925, 28125, 28225, 28325, 28425, 28525, 28625, 28725] },
-    { key: "frank",     displayName: "Frank Marshall",     matchName: "Frank Marshall",     shares: 373.144, contributions: [27925, 28125, 28225, 28325, 28425, 28525, 28625, 28725] },
-    { key: "david",     displayName: "David Sibilia",      matchName: "David Sibilia",      shares: 104.501, contributions: [9747, 9847, 9947, 10047, 10207, 10377, 10477, 10637] },
-    { key: "jay",       displayName: "Jay Messina",        matchName: "Jay Messina",        shares: 102.706, contributions: [9729, 9929, 10129, 10229, 10379, 10544, 10709, 10874] },
-    { key: "joe-m",     displayName: "Joe Messina",        matchName: "Joe Messina",        shares: 64.922, contributions: [6050, 6831.44, 6831.44, 6831.44, 6831.44, 6996.44, 7161.44, 7326.44] },
-    { key: "mike",      displayName: "Mike Sibilia",       matchName: "Mike Sibilia",       shares: 59.871, contributions: [5950, 6150, 6150, 6250, 6450, 6450, 6550, 6650] },
-    { key: "jim-flynn", displayName: "Jimmy Flynn",        matchName: "Jimmy Flynn",        shares: 61.123, contributions: [5950, 6150, 6250, 6350, 6350, 6550, 6650, 6750] },
-    { key: "tommy",     displayName: "Tommy Sibilia",      matchName: "Tommy Sibilia",      shares: 54.456, contributions: [5250, 5450, 5550, 5650, 5750, 5850, 5950, 6050] },
-    { key: "carmine",   displayName: "Carmine Rubinaccio", matchName: "Carmine Rubinaccio", shares: 25.651, contributions: [1850, 2050, 2150, 2350, 2720, 3020, 3320, 3620] },
-    { key: "william",   displayName: "Bill Ilaria",        matchName: "Bill Ilaria",        shares: 16.556, contributions: [null, 1000, 1153, 1313.88, 1683.88, 1983.88, 2283.88, 2583.88] },
-    { key: "robert",    displayName: "Robert Sibilia",     matchName: "Robert Sibilia",     shares: 8.178, contributions: [550, 750, 850, 950, 1050, 1150, 1250, null] },
+    { key: "cosmo",     displayName: "Cosimo Cancelliere", matchName: "Cosimo Cancelliere", shares: 375.021, contributions: [27925, 28125, 28225, 28325, 28425, 28525, 28625, 28725, 28825, 28925, 29025] },
+    { key: "monte",     displayName: "Monte Cariani",      matchName: "Monte Cariani",      shares: 370.872, contributions: [27825, 28025, 28125, 28225, 28325, 28425, 28425, 28425, 28425, 28425, 28425] },
+    { key: "paul",      displayName: "Paul Ciampi",        matchName: "Paul Ciampi",        shares: 374.990, contributions: [27925, 27925, 28225, 28325, 28425, 28525, 28625, 28625, 28625, 28925, 29025] },
+    { key: "joe-r",     displayName: "Joe Grot",           matchName: "Joe Grot",           shares: 375.021, contributions: [27925, 28125, 28225, 28325, 28425, 28525, 28625, 28725, 28825, 28925, 29025] },
+    { key: "len",       displayName: "Lenny Guancione",    matchName: "Lenny Guancione",    shares: 374.073, contributions: [27925, 28125, 28225, 28325, 28425, 28525, 28625, 28725, 28725, 28925, 28925] },
+    { key: "frank",     displayName: "Frank Marshall",     matchName: "Frank Marshall",     shares: 375.021, contributions: [27925, 28125, 28225, 28325, 28425, 28525, 28625, 28725, 28825, 28925, 29025] },
+    { key: "david",     displayName: "David Sibilia",      matchName: "David Sibilia",      shares: 108.422, contributions: [9747, 9847, 9947, 10047, 10207, 10377, 10477, 10637, 10802, 10962, 11262] },
+    { key: "jay",       displayName: "Jay Messina",        matchName: "Jay Messina",        shares: 105.740, contributions: [9729, 9929, 10129, 10229, 10379, 10544, 10709, 10874, 11039, 11199, 11359] },
+    { key: "joe-m",     displayName: "Joe Messina",        matchName: "Joe Messina",        shares: 67.956, contributions: [6050, 6831.44, 6831.44, 6831.44, 6831.44, 6996.44, 7161.44, 7326.44, 7491.44, 7651.44, 7811.44] },
+    { key: "mike",      displayName: "Mike Sibilia",       matchName: "Mike Sibilia",       shares: 61.748, contributions: [5950, 6150, 6150, 6250, 6450, 6450, 6550, 6650, 6750, 6850, 6950] },
+    { key: "jim-flynn", displayName: "Jimmy Flynn",        matchName: "Jimmy Flynn",        shares: 63.000, contributions: [5950, 6150, 6250, 6350, 6350, 6550, 6650, 6750, 6850, 6950, 7050] },
+    { key: "tommy",     displayName: "Tommy Sibilia",      matchName: "Tommy Sibilia",      shares: 56.334, contributions: [5250, 5450, 5550, 5650, 5750, 5850, 5950, 6050, 6150, 6250, 6350] },
+    { key: "carmine",   displayName: "Carmine Rubinaccio", matchName: "Carmine Rubinaccio", shares: 28.949, contributions: [1850, 2050, 2150, 2350, 2720, 3020, 3320, 3620, 3720, 3920, 4145] },
+    { key: "william",   displayName: "Bill Ilaria",        matchName: "Bill Ilaria",        shares: 22.188, contributions: [null, 1000, 1153, 1313.88, 1683.88, 1983.88, 2283.88, 2583.88, 2683.88, 2983.88, 3283.88] },
+    { key: "robert",    displayName: "Robert Sibilia",     matchName: "Robert Sibilia",     shares: 10.671, contributions: [550, 750, 850, 950, 1050, 1150, 1250, 1250, 1450, 1550, 1650] },
 ];
 
 /**
